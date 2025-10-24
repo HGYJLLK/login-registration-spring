@@ -4,6 +4,7 @@
       <template #header>
         <div class="card-header">
           <span>用户管理</span>
+          <el-button type="primary" @click="handleAdd">新增</el-button>
         </div>
       </template>
 
@@ -72,13 +73,51 @@
         </span>
       </template>
     </el-dialog>
+
+    <!-- 新增用户对话框 -->
+    <el-dialog
+      v-model="addDialogVisible"
+      title="新增用户"
+      width="600px"
+      @close="handleAddDialogClose"
+    >
+      <el-form :model="addForm" :rules="addRules" ref="addFormRef" label-width="100px">
+        <el-form-item label="用户名" prop="username">
+          <el-input v-model="addForm.username" placeholder="请输入用户名" />
+        </el-form-item>
+        <el-form-item label="密码" prop="password">
+          <el-input v-model="addForm.password" type="password" placeholder="请输入密码" />
+        </el-form-item>
+        <el-form-item label="确认密码" prop="confirmPassword">
+          <el-input v-model="addForm.confirmPassword" type="password" placeholder="请再次输入密码" />
+        </el-form-item>
+        <el-form-item label="姓名" prop="name">
+          <el-input v-model="addForm.name" placeholder="请输入姓名" />
+        </el-form-item>
+        <el-form-item label="性别" prop="gender">
+          <el-select v-model="addForm.gender" placeholder="请选择性别" style="width: 100%">
+            <el-option label="男" value="男" />
+            <el-option label="女" value="女" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="手机号码" prop="phonenumber">
+          <el-input v-model="addForm.phonenumber" placeholder="请输入手机号码" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="addDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="handleAddSave">确定</el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { getAllUsers, updateUser, deleteUser } from '../api/user'
+import { getAllUsers, updateUser, deleteUser, register } from '../api/user'
 
 const userList = ref([])
 const loading = ref(false)
@@ -94,6 +133,19 @@ const editForm = ref({
   phonenumber: ''
 })
 
+// 新增用户相关状态
+const addDialogVisible = ref(false)
+const addFormRef = ref(null)
+
+const addForm = ref({
+  username: '',
+  password: '',
+  confirmPassword: '',
+  name: '',
+  gender: '',
+  phonenumber: ''
+})
+
 const rules = {
   name: [
     { required: true, message: '请输入姓名', trigger: 'blur' }
@@ -103,6 +155,52 @@ const rules = {
   ],
   password: [
     { min: 6, message: '密码长度至少 6 个字符', trigger: 'blur' }
+  ],
+  gender: [
+    { required: true, message: '请选择性别', trigger: 'change' }
+  ],
+  phonenumber: [
+    { required: true, message: '请输入手机号码', trigger: 'blur' },
+    { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号码', trigger: 'blur' }
+  ]
+}
+
+// 新增用户表单验证
+const validateAddPassword = (rule, value, callback) => {
+  if (value === '') {
+    callback(new Error('请输入密码'))
+  } else {
+    if (addForm.value.confirmPassword !== '') {
+      addFormRef.value.validateField('confirmPassword')
+    }
+    callback()
+  }
+}
+
+const validateConfirmPassword = (rule, value, callback) => {
+  if (value === '') {
+    callback(new Error('请再次输入密码'))
+  } else if (value !== addForm.value.password) {
+    callback(new Error('两次输入密码不一致'))
+  } else {
+    callback()
+  }
+}
+
+const addRules = {
+  username: [
+    { required: true, message: '请输入用户名', trigger: 'blur' },
+    { min: 3, max: 20, message: '用户名长度在 3 到 20 个字符', trigger: 'blur' }
+  ],
+  password: [
+    { required: true, validator: validateAddPassword, trigger: 'blur' },
+    { min: 6, message: '密码长度至少 6 个字符', trigger: 'blur' }
+  ],
+  confirmPassword: [
+    { required: true, validator: validateConfirmPassword, trigger: 'blur' }
+  ],
+  name: [
+    { required: true, message: '请输入姓名', trigger: 'blur' }
   ],
   gender: [
     { required: true, message: '请选择性别', trigger: 'change' }
@@ -193,6 +291,55 @@ const handleDialogClose = () => {
   }
 }
 
+// 打开新增用户对话框
+const handleAdd = () => {
+  addForm.value = {
+    username: '',
+    password: '',
+    confirmPassword: '',
+    name: '',
+    gender: '',
+    phonenumber: ''
+  }
+  addDialogVisible.value = true
+}
+
+// 保存新增用户
+const handleAddSave = async () => {
+  if (!addFormRef.value) return
+
+  await addFormRef.value.validate(async (valid) => {
+    if (valid) {
+      try {
+        const res = await register({
+          username: addForm.value.username,
+          password: addForm.value.password,
+          name: addForm.value.name,
+          gender: addForm.value.gender,
+          phonenumber: addForm.value.phonenumber
+        })
+        if (res.success) {
+          ElMessage.success('新增用户成功')
+          addDialogVisible.value = false
+          getUserList()
+        } else {
+          ElMessage.error(res.message || '新增用户失败')
+        }
+      } catch (error) {
+        console.error('新增用户错误:', error)
+        ElMessage.error('新增用户失败')
+      }
+    }
+  })
+}
+
+// 关闭新增对话框
+const handleAddDialogClose = () => {
+  if (addFormRef.value) {
+    addFormRef.value.resetFields()
+  }
+}
+
 onMounted(() => {
   getUserList()
 })
@@ -205,6 +352,9 @@ onMounted(() => {
 }
 
 .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   font-size: 20px;
   font-weight: bold;
 }
