@@ -15,18 +15,19 @@ public class AuthService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public boolean register(String username, String password, String name, String email) {
+    public boolean register(String username, String password, String name, String gender, String phonenumber) {
         // 检查用户名是否已存在
         if (userRepository.existsByUsername(username)) {
             return false;
         }
 
-        // 创建新用户
+        // 创建新用户 - 密码明文存储（仅用于作业）
         User user = new User();
         user.setUsername(username);
-        user.setPassword(passwordEncoder.encode(password));
+        user.setPassword(password);  // 明文存储
         user.setName(name);
-        user.setPhonenumber(email); // 使用phonenumber字段保存email
+        user.setGender(gender);
+        user.setPhonenumber(phonenumber);
 
         userRepository.save(user);
         return true;
@@ -34,7 +35,7 @@ public class AuthService {
 
     public boolean authenticate(String username, String password) {
         return userRepository.findByUsername(username)
-                .map(user -> passwordEncoder.matches(password, user.getPassword()))
+                .map(user -> password.equals(user.getPassword()))  // 明文比较
                 .orElse(false);
     }
 }

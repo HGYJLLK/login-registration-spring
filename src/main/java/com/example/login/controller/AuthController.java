@@ -22,7 +22,8 @@ public class AuthController {
             String username = requestBody.get("username");
             String password = requestBody.get("password");
             String name = requestBody.get("name");
-            String email = requestBody.get("email");
+            String gender = requestBody.get("gender");
+            String phonenumber = requestBody.get("phonenumber");
 
             if (username == null || password == null) {
                 return ResponseEntity.badRequest().body(Map.of(
@@ -31,16 +32,13 @@ public class AuthController {
                 ));
             }
 
-            // 检查密码长度是否超过数据库字段限制
-            if (password.length() > 20) { // 如果数据库字段长度有限制，则在这里检查
-                // 仅在开发阶段添加以下日志，生产环境应省略详细信息
-                System.out.println("Password length: " + password.length());
-                System.out.println("Encrypted password length may exceed DB column size");
-            }
-
-            boolean success = authService.register(username, password,
+            boolean success = authService.register(
+                    username,
+                    password,
                     name != null ? name : username,
-                    email != null ? email : "");
+                    gender,
+                    phonenumber
+            );
 
             if (success) {
                 return ResponseEntity.ok(Map.of(
