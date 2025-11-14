@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>为学生关联卡</title>
+  <style>
+    table { border-collapse: collapse; width: 90%; margin: 20px auto; }
+    th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
+    th { background-color: #f2f2f2; }
+    .header { text-align: center; margin-top: 20px; }
+    .btn { padding: 6px 12px; text-decoration: none; border-radius: 4px; }
+    .btn-bind { background: #4CAF50; color: white; border: none; cursor: pointer; }
+    .btn-back { background: #9E9E9E; color: white; }
+    .pagination { text-align: center; margin: 20px 0; }
+    .pagination a { display: inline-block; padding: 5px 10px; margin: 0 5px; border: 1px solid #ddd; text-decoration: none; color: #333; }
+    .pagination a.active { background: #2196F3; color: white; border-color: #2196F3; }
+    .student-info { text-align: center; margin: 10px 0; padding: 10px; background-color: #f9f9f9; }
+  </style>
+</head>
+<body>
+<div class="header">
+  <h2>为学生关联卡证</h2>
+  <div class="student-info">
+    <p>学号：<span th:text="${student.studentId}"></span> | 姓名：<span th:text="${student.name}"></span> | 专业：<span th:text="${student.major}"></span></p>
+  </div>
+  <a th:href="@{/student/detail/{studentId}(studentId=${student.studentId})}" class="btn btn-back">返回学生详情</a>
+  <a href="/student/list" class="btn btn-back" style="background: #607D8B;">返回学生列表</a>
+</div>
+
+<table>
+  <thead>
+  <tr>
+    <th>卡号</th>
+    <th>状态</th>
+    <th>卡上金额</th>
+    <th>创建时间</th>
+    <th>操作</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="card : ${cardPage.content}">
+    <td th:text="${card.cardId}"></td>
+    <td>
+                <span th:classappend="${card.status == T(com.ch.ch6ex.entity.Card.CardStatus).UNUSED ? 'status-unused' :
+                                   (card.status == T(com.ch.ch6ex.entity.Card.CardStatus).IN_USE ? 'status-inuse' : 'status-discarded')}"
+                      th:text="${card.status.getDescription()}"></span>
+    </td>
+    <td th:text="${card.balance} + ' 元'"></td>
+    <td th:text="${#dates.format(card.createTime, 'yyyy-MM-dd HH:mm')}"></td>
+    <td>
+      <form th:action="@{/card/bindToStudent}" method="post" style="display: inline;">
+        <input type="hidden" name="studentId" th:value="${student.studentId}">
+        <input type="hidden" name="cardId" th:value="${card.cardId}">
+        <button type="submit" class="btn btn-bind" onclick="return confirm('确定关联此卡？')">关联</button>
+      </form>
+    </td>
+  </tr>
+  <tr th:if="${cardPage.content.isEmpty()}">
+    <td colspan="5" style="color: #999;">暂无可用的未关联卡</td>
+  </tr>
+  </tbody>
+</table>
+
+<div class="pagination" th:if="${cardPage.totalPages > 1}">
+  <a th:if="${cardPage.number > 0}" th:href="@{/card/selectForStudent/{studentId}(studentId=${student.studentId}, page=${cardPage.number - 1}, size=${cardPage.size})}">上一页</a>
+
+  <th:block th:each="i : ${#numbers.sequence(0, cardPage.totalPages - 1)}">
+    <a th:href="@{/card/selectForStudent/{studentId}(studentId=${student.studentId}, page=${i}, size=${cardPage.size})}"
+       th:classappend="${i == cardPage.number ? 'active' : ''}"
+       th:text="${i + 1}"></a>
+  </th:block>
+
+  <a th:if="${cardPage.number < cardPage.totalPages - 1}" th:href="@{/card/selectForStudent/{studentId}(studentId=${student.studentId}, page=${cardPage.number + 1}, size=${cardPage.size})}">下一页</a>
+</div>
+</body>
+</html>

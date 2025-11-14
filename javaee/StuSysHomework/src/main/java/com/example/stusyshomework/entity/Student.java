@@ -2,6 +2,8 @@ package com.example.stusyshomework.entity;
 
 import jakarta.persistence.*;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "students")
@@ -42,6 +44,17 @@ public class Student {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
 
+    @OneToOne(mappedBy = "student")
+    private Card card;
+
+    @ManyToMany
+    @JoinTable(
+        name = "student_course",
+        joinColumns = @JoinColumn(name = "student_id"),
+        inverseJoinColumns = @JoinColumn(name = "course_id")
+    )
+    private Set<Course> courses = new HashSet<>();
+
     // 构造方法
     public Student() {
         this.createdAt = new Date();
@@ -80,4 +93,10 @@ public class Student {
 
     public Date getCreatedAt() { return createdAt; }
     public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }
+
+    public Card getCard() { return card; }
+    public void setCard(Card card) { this.card = card; }
+
+    public Set<Course> getCourses() { return courses; }
+    public void setCourses(Set<Course> courses) { this.courses = courses; }
 }

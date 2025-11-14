@@ -21,10 +21,15 @@ public class StudentController {
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     @GetMapping("/")
+    public String index() {
+        return "index";
+    }
+
+    @GetMapping("/student/list")
     public String listStudents(Model model) {
         List<Student> students = studentService.getAllStudents();
         model.addAttribute("students", students);
-        return "index";
+        return "student/list";
     }
 
     @PostMapping("/student/save")
@@ -99,11 +104,11 @@ public class StudentController {
             Student savedStudent = studentService.saveStudent(student);
             System.out.println("保存成功，学生ID: " + savedStudent.getId());
 
-            return "redirect:/";
+            return "redirect:/student/list";
         } catch (Exception e) {
             System.err.println("保存学生信息失败:");
             e.printStackTrace();
-            return "redirect:/?error=true";
+            return "redirect:/student/list?error=true";
         }
     }
 
@@ -116,7 +121,7 @@ public class StudentController {
             System.err.println("删除学生失败:");
             e.printStackTrace();
         }
-        return "redirect:/";
+        return "redirect:/student/list";
     }
 
     @GetMapping("/student/search")
@@ -124,6 +129,18 @@ public class StudentController {
         List<Student> students = studentService.searchStudents(keyword);
         model.addAttribute("students", students);
         model.addAttribute("searchKeyword", keyword);
-        return "index";
+        return "student/list";
+    }
+
+    @GetMapping("/student/statistics")
+    public String statistics(Model model) {
+        // Gender statistics
+        model.addAttribute("genderStats", studentService.getGenderStatistics());
+
+        // All students for relationship analysis
+        List<Student> students = studentService.getAllStudents();
+        model.addAttribute("students", students);
+
+        return "student/statistics";
     }
 }

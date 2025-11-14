@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>关联学生</title>
+  <style>
+    table { border-collapse: collapse; width: 80%; margin: 20px auto; }
+    th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
+    th { background-color: #f2f2f2; }
+    .header { text-align: center; margin-top: 20px; }
+    .btn { padding: 6px 12px; text-decoration: none; border-radius: 4px; }
+    .btn-bind { background: #4CAF50; color: white; border: none; cursor: pointer; }
+    .btn-back { background: #9E9E9E; color: white; }
+    .pagination { text-align: center; margin: 20px 0; }
+    .pagination a { display: inline-block; padding: 5px 10px; margin: 0 5px; border: 1px solid #ddd; text-decoration: none; color: #333; }
+    .pagination a.active { background: #2196F3; color: white; border-color: #2196F3; }
+  </style>
+</head>
+<body>
+<div class="header">
+  <h2>选择学生关联 - 卡号：<span th:text="${cardId}"></span></h2>
+  <a href="/card/list" class="btn btn-back">返回卡列表</a>
+</div>
+
+<table>
+  <thead>
+  <tr>
+    <th>学号</th>
+    <th>姓名</th>
+    <th>性别</th>
+    <th>年龄</th>
+    <th>专业</th>
+    <th>操作</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="student : ${studentPage.content}">
+    <td th:text="${student.studentId}"></td>
+    <td th:text="${student.name}"></td>
+    <td th:text="${student.gender}"></td>
+    <td th:text="${student.age}"></td>
+    <td th:text="${student.major}"></td>
+    <td>
+      <form th:action="@{/card/doBind}" method="post" style="display: inline;">
+        <input type="hidden" name="cardId" th:value="${cardId}">
+        <input type="hidden" name="studentId" th:value="${student.studentId}">
+        <button type="submit" class="btn btn-bind" onclick="return confirm('确定关联该学生？')">关联</button>
+      </form>
+    </td>
+  </tr>
+  <tr th:if="${studentPage.content.isEmpty()}">
+    <td colspan="6" style="color: #999;">暂无可用学生</td>
+  </tr>
+  </tbody>
+</table>
+
+<div class="pagination" th:if="${studentPage.totalPages > 1}">
+  <a th:if="${studentPage.number > 0}" th:href="@{/card/bind/{cardId}(cardId=${cardId}, page=${studentPage.number - 1}, size=${studentPage.size})}">上一页</a>
+
+  <th:block th:each="i : ${#numbers.sequence(0, studentPage.totalPages - 1)}">
+    <a th:href="@{/card/bind/{cardId}(cardId=${cardId}, page=${i}, size=${studentPage.size})}"
+       th:classappend="${i == studentPage.number ? 'active' : ''}"
+       th:text="${i + 1}"></a>
+  </th:block>
+
+  <a th:if="${studentPage.number < studentPage.totalPages - 1}" th:href="@{/card/bind/{cardId}(cardId=${cardId}, page=${studentPage.number + 1}, size=${studentPage.size})}">下一页</a>
+</div>
+</body>
+</html>

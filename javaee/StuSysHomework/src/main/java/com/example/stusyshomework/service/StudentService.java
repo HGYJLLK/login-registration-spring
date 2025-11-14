@@ -11,4 +11,8 @@ public interface StudentService {
     void deleteStudent(Integer id);
     List<Student> searchStudents(String keyword);
     Map<String, Object> getGenderStatistics();
+
+    // Card association methods
+    List<Student> getStudentsWithoutCard();
+    boolean hasCard(Integer studentId);
 }

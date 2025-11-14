@@ -1,6 +1,7 @@
 package com.example.stusyshomework.service.impl;
 
 import com.example.stusyshomework.entity.Student;
+import com.example.stusyshomework.repository.CardRepository;
 import com.example.stusyshomework.repository.StudentRepository;
 import com.example.stusyshomework.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,12 +10,16 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class StudentServiceImpl implements StudentService {
 
     @Autowired
     private StudentRepository studentRepository;
+
+    @Autowired
+    private CardRepository cardRepository;
 
     @Override
     public List<Student> getAllStudents() {
@@ -55,5 +60,18 @@ public class StudentServiceImpl implements StudentService {
         stats.put("femalePercentage", total > 0 ? String.format("%.1f%%", (femaleCount * 100.0 / total)) : "0%");
 
         return stats;
+    }
+
+    @Override
+    public List<Student> getStudentsWithoutCard() {
+        List<Student> allStudents = studentRepository.findAll();
+        return allStudents.stream()
+                .filter(student -> cardRepository.findByStudent_Id(student.getId()).isEmpty())
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean hasCard(Integer studentId) {
+        return cardRepository.findByStudent_Id(studentId).isPresent();
     }
 }

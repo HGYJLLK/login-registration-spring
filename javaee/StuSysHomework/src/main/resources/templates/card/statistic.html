@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>卡证统计</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            color: #333;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            text-decoration: none;
+            border: 1px solid #333;
+            background: white;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .btn:hover {
+            background: #333;
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 30px;
+            border: 1px solid #ddd;
+        }
+
+        .stat-card h3 {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .section-title {
+            font-size: 20px;
+            color: #333;
+            margin: 30px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #333;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>卡证统计</h1>
+        <div class="header-buttons">
+            <a href="/card/list" class="btn">卡证列表</a>
+            <a href="/card/index" class="btn">返回卡证首页</a>
+            <a href="/" class="btn">返回系统首页</a>
+        </div>
+    </div>
+
+    <h2 class="section-title">卡证状态统计</h2>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>总卡数</h3>
+            <div class="value" th:text="${cardStats.totalCards}">0</div>
+        </div>
+        <div class="stat-card">
+            <h3>使用中</h3>
+            <div class="value" th:text="${cardStats.usingCards}">0</div>
+        </div>
+        <div class="stat-card">
+            <h3>未启用</h3>
+            <div class="value" th:text="${cardStats.unusedCards}">0</div>
+        </div>
+        <div class="stat-card">
+            <h3>报废</h3>
+            <div class="value" th:text="${cardStats.scrapCards}">0</div>
+        </div>
+    </div>
+
+    <h2 class="section-title">金额统计</h2>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>累计充值总额</h3>
+            <div class="value" th:text="${financialStats.totalRecharge}">0</div>
+        </div>
+        <div class="stat-card">
+            <h3>累计消费总额</h3>
+            <div class="value" th:text="${financialStats.totalConsume}">0</div>
+        </div>
+        <div class="stat-card">
+            <h3>今日充值</h3>
+            <div class="value" th:text="${financialStats.todayRecharge}">0</div>
+        </div>
+        <div class="stat-card">
+            <h3>今日消费</h3>
+            <div class="value" th:text="${financialStats.todayConsume}">0</div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
