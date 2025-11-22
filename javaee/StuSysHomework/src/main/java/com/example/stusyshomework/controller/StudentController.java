@@ -2,6 +2,7 @@ package com.example.stusyshomework.controller;
 
 import com.example.stusyshomework.entity.Student;
 import com.example.stusyshomework.service.StudentService;
+import com.example.stusyshomework.service.StudentCourseMBService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,13 +11,18 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class StudentController {
 
     @Autowired
     private StudentService studentService;
+
+    @Autowired
+    private StudentCourseMBService studentCourseService;
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -29,6 +35,14 @@ public class StudentController {
     public String listStudents(Model model) {
         List<Student> students = studentService.getAllStudents();
         model.addAttribute("students", students);
+
+        Map<String, List<String>> studentCourseMap = new HashMap<>();
+        for (Student student : students) {
+            List<String> courseIds = studentCourseService.getCourseIdsByStudentId(student.getStudentNo());
+            studentCourseMap.put(student.getStudentNo(), courseIds);
+        }
+        model.addAttribute("studentCourseMap", studentCourseMap);
+
         return "student/list";
     }
 

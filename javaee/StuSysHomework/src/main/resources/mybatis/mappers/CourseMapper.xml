@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.stusyshomework.mapper.CourseMapper">
+
+    <resultMap id="CourseResultMap" type="CourseMB">
+        <id property="courseId" column="course_id"/>
+        <result property="courseName" column="course_name"/>
+        <result property="term" column="term"/>
+        <result property="description" column="description"/>
+        <result property="credit" column="credit"/>
+    </resultMap>
+
+    <select id="findAll" resultMap="CourseResultMap">
+        SELECT course_id, course_name, term, description, credit
+        FROM course
+        ORDER BY course_id
+    </select>
+
+    <select id="findById" resultMap="CourseResultMap">
+        SELECT course_id, course_name, term, description, credit
+        FROM course
+        WHERE course_id = #{courseId}
+    </select>
+
+    <insert id="insert">
+        INSERT INTO course (course_id, course_name, term, description, credit)
+        VALUES (#{courseId}, #{courseName}, #{term}, #{description}, #{credit})
+    </insert>
+
+    <update id="update">
+        UPDATE course
+        SET course_name = #{courseName},
+            term = #{term},
+            description = #{description},
+            credit = #{credit}
+        WHERE course_id = #{courseId}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM course WHERE course_id = #{courseId}
+    </delete>
+
+</mapper>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>学生选课</title>
+  <style>
+    table { border-collapse: collapse; width: 90%; margin: 20px auto; }
+    th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
+    th { background-color: #f2f2f2; }
+    .btn { padding: 6px 12px; text-decoration: none; border-radius: 4px; }
+    .btn-submit { background: #4CAF50; color: white; border: none; cursor: pointer; padding: 8px 16px; }
+    .btn-back { background: #9E9E9E; color: white; }
+    .header { text-align: center; margin-top: 20px; }
+    .student-info { text-align: center; margin: 10px 0; padding: 10px; background-color: #f9f9f9; }
+  </style>
+</head>
+<body>
+<div class="header">
+  <h2>学生【<span th:text="${student.name}"></span>】选课</h2>
+  <div class="student-info">
+    <p>学号：<span th:text="${student.studentId}"></span> | 专业：<span th:text="${student.major}"></span> | 年级：<span th:text="${student.grade}"></span></p>
+  </div>
+
+  <form th:action="@{/course/studentChoose}" method="post">
+    <input type="hidden" name="studentId" th:value="${student.studentId}">
+
+    <table>
+      <thead>
+      <tr>
+        <th>选择</th>
+        <th>课程编号</th>
+        <th>课程名</th>
+        <th>课程学期</th>
+        <th>课程学分</th>
+        <th>课程简介</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="course : ${allCourses}">
+        <td>
+          <input type="checkbox" name="courseIds" th:value="${course.courseId}"
+                 th:checked="${selectedCourseIds.contains(course.courseId)}">
+        </td>
+        <td th:text="${course.courseId}"></td>
+        <td th:text="${course.courseName}"></td>
+        <td th:text="${course.term}"></td>
+        <td th:text="${course.credit}"></td>
+        <td th:text="${course.description}"></td>
+      </tr>
+      </tbody>
+    </table>
+
+    <div style="text-align: center; margin: 20px;">
+      <button type="submit" class="btn btn-submit">确认选课</button>
+      <a th:href="@{/student/list}" class="btn btn-back">返回学生列表</a>
+    </div>
+  </form>
+</div>
+</body>
+</html>

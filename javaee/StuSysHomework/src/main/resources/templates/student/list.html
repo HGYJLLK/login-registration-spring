@@ -243,12 +243,13 @@
                 <th>院系</th>
                 <th>状态</th>
                 <th>学生卡</th>
+                <th>课程信息</th>
                 <th>操作</th>
             </tr>
             </thead>
             <tbody>
             <tr th:if="${#lists.isEmpty(students)}">
-                <td colspan="10" style="text-align: center; color: #6b7280; padding: 40px;">
+                <td colspan="11" style="text-align: center; color: #6b7280; padding: 40px;">
                     暂无学生数据
                 </td>
             </tr>
@@ -273,6 +274,14 @@
                     <span th:if="${student.card == null}">
                         <a th:href="@{/card/selectForStudent(studentId=${student.id})}" class="card-link">未关联</a>
                     </span>
+                </td>
+                <td>
+                    <th:block th:if="${#lists.isEmpty(studentCourseMap[student.studentNo])}">
+                        <a th:href="@{/course/chooseForStudent/{studentId}(studentId=${student.studentNo})}" class="card-link">未关联</a>
+                    </th:block>
+                    <th:block th:unless="${#lists.isEmpty(studentCourseMap[student.studentNo])}">
+                        <a th:href="@{/course/studentCourses/{studentId}(studentId=${student.studentNo})}" class="card-link">课程列表</a>
+                    </th:block>
                 </td>
                 <td>
                     <div class="action-buttons">

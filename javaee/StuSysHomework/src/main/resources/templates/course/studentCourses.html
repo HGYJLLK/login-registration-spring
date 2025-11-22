@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>学生已选课程</title>
+  <style>
+    table { border-collapse: collapse; width: 90%; margin: 20px auto; }
+    th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
+    th { background-color: #f2f2f2; }
+    .btn { padding: 6px 12px; text-decoration: none; border-radius: 4px; }
+    .btn-add { background: #2196F3; color: white; }
+    .btn-delete { background: #f44336; color: white; }
+    .btn-back { background: #9E9E9E; color: white; }
+    .header { text-align: center; margin-top: 20px; }
+    .student-info { text-align: center; margin: 10px 0; padding: 10px; background-color: #f9f9f9; }
+  </style>
+</head>
+<body>
+<div class="header">
+  <h2>学生【<span th:text="${student.name}"></span>】已选课程</h2>
+  <div class="student-info">
+    <p>学号：<span th:text="${student.studentId}"></span> | 专业：<span th:text="${student.major}"></span> | 年级：<span th:text="${student.grade}"></span></p>
+  </div>
+
+  <a th:href="@{/course/chooseForStudent/{studentId}(studentId=${student.studentId})}" class="btn btn-add">修改选课</a>
+  <a th:href="@{/student/list}" class="btn btn-back">返回学生列表</a>
+
+  <table>
+    <thead>
+    <tr>
+      <th>课程编号</th>
+      <th>课程名</th>
+      <th>课程学期</th>
+      <th>课程学分</th>
+      <th>课程简介</th>
+      <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="course : ${courses}">
+      <td th:text="${course.courseId}"></td>
+      <td th:text="${course.courseName}"></td>
+      <td th:text="${course.term}"></td>
+      <td th:text="${course.credit}"></td>
+      <td th:text="${course.description}"></td>
+      <td>
+        <a th:href="@{/course/removeFromStudent/{studentId}/{courseId}(studentId=${student.studentId}, courseId=${course.courseId})}"
+           class="btn btn-delete"
+           onclick="return confirm('确定从该学生的选课中移除这门课程？')">移除</a>
+      </td>
+    </tr>
+    <tr th:if="${courses.isEmpty()}">
+      <td colspan="6" style="color: #999;">该学生尚未选择任何课程</td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+</body>
+</html>
