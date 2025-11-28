@@ -33,3 +33,5 @@ build/
 .vscode/
 .DS_Store
 .DS_Store
+/yueqian/music-client
+/yueqian/music-server

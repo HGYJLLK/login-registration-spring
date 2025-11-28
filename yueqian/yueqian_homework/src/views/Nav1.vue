@@ -32,7 +32,7 @@
       >
         <el-table-column prop="name" label="姓名" min-width="120" />
         <el-table-column prop="username" label="用户名" min-width="150" />
-        <el-table-column prop="password" label="密码" min-width="400" show-overflow-tooltip>
+        <el-table-column prop="password" label="密码" min-width="300" show-overflow-tooltip>
           <template #default="scope">
             <span style="font-family: monospace; font-size: 12px;">{{ scope.row.password }}</span>
           </template>
@@ -56,7 +56,7 @@
     <el-dialog
       v-model="dialogVisible"
       title="修改用户信息"
-      width="600px"
+      width="700px"
       @close="handleDialogClose"
     >
       <el-form :model="editForm" :rules="rules" ref="editFormRef" label-width="100px">
@@ -383,6 +383,8 @@ onMounted(() => {
 .nav1-container {
   width: 100%;
   height: 100%;
+  background-color: #121212;
+  padding: 24px;
 }
 
 .card-header {
@@ -391,6 +393,7 @@ onMounted(() => {
   align-items: center;
   font-size: 20px;
   font-weight: bold;
+  color: #FFFFFF;
 }
 
 .header-right {
@@ -398,26 +401,138 @@ onMounted(() => {
   align-items: center;
 }
 
+/* Card 深色主题 */
 :deep(.el-card) {
-  height: 100%;
+  border: none !important; /* 或者 border: 1px solid #333 !important; */
+}
+
+:deep(.el-card__header) {
+  background-color: #1E1E1E;
+  border-bottom: 1px solid #282828;
+  color: #FFFFFF;
 }
 
 :deep(.el-card__body) {
   height: calc(100% - 60px);
   overflow: auto;
+  background-color: #1E1E1E;
+}
+
+/* 搜索框深色主题 */
+:deep(.el-input__wrapper) {
+  background-color: #282828;
+  box-shadow: none;
+  border: 1px solid #404040;
+}
+
+:deep(.el-input__inner) {
+  color: #FFFFFF;
+}
+
+:deep(.el-input__inner::placeholder) {
+  color: #B3B3B3;
+}
+
+:deep(.el-icon) {
+  color: #B3B3B3;
+}
+
+/* 表格深色主题 - 核弹级覆盖 */
+:deep(.el-table),
+:deep(.el-table th),
+:deep(.el-table tr),
+:deep(.el-table td) {
+  background-color: transparent !important;
+  --el-table-bg-color: transparent !important;
+  --el-table-tr-bg-color: transparent !important;
+  --el-table-header-bg-color: #282828 !important;
+  --el-table-row-hover-bg-color: rgba(255, 255, 255, 0.1) !important;
+  --el-fill-color-lighter: transparent !important;
+  color: #FFFFFF;
 }
 
 :deep(.el-table) {
-  font-size: 14px;
+  --el-table-border-color: #333333 !important; /* 关键变量 */
+  --el-table-border: 1px solid #333333 !important;
 }
 
 :deep(.el-table th) {
   font-size: 15px;
   font-weight: bold;
-  background-color: #f5f7fa;
+  background-color: #282828 !important;
+  color: #B3B3B3 !important;
+  border-color: #404040 !important;
 }
 
 :deep(.el-table td) {
   padding: 12px 0;
+  background-color: transparent !important;
+  color: #FFFFFF !important;
+  border-color: #404040 !important;
+}
+
+:deep(.el-table--border) {
+  border-color: #404040 !important;
+}
+
+:deep(.el-table--border::after),
+:deep(.el-table--border::before) {
+  background-color: #404040 !important;
+}
+
+:deep(.el-table__inner-wrapper::before) {
+  background-color: #404040 !important;
+}
+
+:deep(.el-table .el-table__row:hover) {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* 对话框深色主题 */
+:deep(.el-dialog) {
+  background-color: #1E1E1E;
+  border: 1px solid #282828;
+}
+
+:deep(.el-dialog__header) {
+  background-color: #1E1E1E;
+  border-bottom: 1px solid #282828;
+}
+
+:deep(.el-dialog__title) {
+  color: #FFFFFF;
+}
+
+:deep(.el-dialog__body) {
+  background-color: #1E1E1E;
+  color: #FFFFFF;
+}
+
+:deep(.el-dialog__footer) {
+  background-color: #1E1E1E;
+  border-top: 1px solid #282828;
+}
+
+/* 表单深色主题 */
+:deep(.el-form-item__label) {
+  color: #B3B3B3;
+}
+
+/* Select 下拉框深色主题 */
+:deep(.el-select-dropdown) {
+  background-color: #282828;
+  border: 1px solid #404040;
+}
+
+:deep(.el-select-dropdown__item) {
+  color: #FFFFFF;
+}
+
+:deep(.el-select-dropdown__item:hover) {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+:deep(.el-select-dropdown__item.selected) {
+  color: #1db954;
 }
 </style>

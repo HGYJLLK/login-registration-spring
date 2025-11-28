@@ -9,6 +9,10 @@ export default defineConfig({
       '/api': {
         target: 'http://localhost:8082',
         changeOrigin: true
+      },
+      '/music-server': {
+        target: 'http://localhost:8082',
+        changeOrigin: true
       }
     }
   }

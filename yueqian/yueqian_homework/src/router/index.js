@@ -6,6 +6,7 @@ import Nav1 from '../views/Nav1.vue'
 import Nav2 from '../views/Nav2.vue'
 import Nav3 from '../views/Nav3.vue'
 import Nav4 from '../views/Nav4.vue'
+import MusicList from '../views/MusicList.vue'
 
 const routes = [
   {
@@ -47,6 +48,11 @@ const routes = [
         path: 'nav4',
         name: 'Nav4',
         component: Nav4
+      },
+      {
+        path: 'music',
+        name: 'Music',
+        component: MusicList
       }
     ]
   }

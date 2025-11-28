@@ -3,7 +3,8 @@
     <!-- 顶部栏 -->
     <el-header class="header">
       <div class="header-left">
-        <span>管理系统</span>
+        <img src="/music.svg" alt="音乐" class="header-icon" />
+        <span>音乐播放器</span>
       </div>
       <div class="header-right">
         <el-dropdown @command="handleCommand">
@@ -29,25 +30,17 @@
           :default-active="activeMenu"
           class="el-menu-vertical"
           @select="handleMenuSelect"
-          background-color="#304156"
-          text-color="#bfcbd9"
-          active-text-color="#409EFF"
+          background-color="#000000"
+          text-color="#B3B3B3"
+          active-text-color="#1db954"
         >
           <el-menu-item index="/home/nav1">
             <el-icon><User /></el-icon>
-            <span>导航一</span>
+            <span>用户管理</span>
           </el-menu-item>
-          <el-menu-item index="/home/nav2">
-            <el-icon><Document /></el-icon>
-            <span>导航二</span>
-          </el-menu-item>
-          <el-menu-item index="/home/nav3">
-            <el-icon><Setting /></el-icon>
-            <span>导航三</span>
-          </el-menu-item>
-          <el-menu-item index="/home/nav4">
-            <el-icon><DataAnalysis /></el-icon>
-            <span>导航四</span>
+          <el-menu-item index="/home/music">
+            <el-icon><Headset /></el-icon>
+            <span>音乐播放器</span>
           </el-menu-item>
         </el-menu>
       </el-aside>
@@ -64,7 +57,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { User, Document, Setting, DataAnalysis, ArrowDown } from '@element-plus/icons-vue'
+import { User, ArrowDown, Headset } from '@element-plus/icons-vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -107,17 +100,25 @@ const handleCommand = (command) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #fff;
-  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+  background-color: #121212;
+  border-bottom: 1px solid #282828;
   padding: 0 20px;
   height: 60px;
   z-index: 1000;
 }
 
 .header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   font-size: 18px;
-  font-weight: bold;
-  color: #333;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.header-icon {
+  width: 28px;
+  height: 28px;
 }
 
 .header-right {
@@ -129,11 +130,12 @@ const handleCommand = (command) => {
   cursor: pointer;
   display: flex;
   align-items: center;
-  color: #333;
+  color: #FFFFFF;
+  gap: 8px;
 }
 
 .el-dropdown-link:hover {
-  color: #409EFF;
+  color: #1db954;
 }
 
 .main-container {
@@ -142,7 +144,7 @@ const handleCommand = (command) => {
 }
 
 .aside {
-  background-color: #304156;
+  background-color: #000000;
   color: #fff;
   height: 100%;
 }
@@ -153,11 +155,13 @@ const handleCommand = (command) => {
 }
 
 .main {
-  background-color: #f0f2f5;
-  padding: 24px;
+  background-color: #121212;
+  padding: 0;
   height: 100%;
   overflow-y: auto;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 </style>
