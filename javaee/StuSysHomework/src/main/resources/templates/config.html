@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>聊天室配置</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: #ffffff;
+            padding: 40px;
+            border: 2px solid #000000;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .title {
+            color: #000000;
+            font-size: 28px;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        .description {
+            color: #666666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #000000;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #000000;
+            font-size: 14px;
+            background: #ffffff;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #000000;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            text-decoration: none;
+            font-size: 14px;
+            border: 2px solid #000000;
+            background: #000000;
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background: #ffffff;
+            color: #000000;
+        }
+
+        .back-link {
+            margin-top: 20px;
+            display: inline-block;
+            color: #666666;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .back-link:hover {
+            color: #000000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">聊天室配置</h1>
+        <p class="description">请输入您的用户名以加入聊天室。您可以创建多个对话窗口与其他用户实时交流。</p>
+
+        <div class="form-group">
+            <label for="username">用户名</label>
+            <input type="text" id="username" placeholder="请输入您的用户名" />
+        </div>
+
+        <button class="btn" id="openDialogBtn">打开对话窗口</button>
+
+        <a href="/" class="back-link">返回首页</a>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#openDialogBtn').click(function() {
+                var username = $('#username').val().trim();
+
+                if (username === '') {
+                    alert('请输入用户名');
+                    return;
+                }
+
+                var dialogUrl = '/chat/dialog?username=' + encodeURIComponent(username);
+                window.open(dialogUrl, '_blank', 'width=800,height=600');
+
+                $('#username').val('');
+            });
+
+            $('#username').keypress(function(e) {
+                if (e.which === 13) {
+                    $('#openDialogBtn').click();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
