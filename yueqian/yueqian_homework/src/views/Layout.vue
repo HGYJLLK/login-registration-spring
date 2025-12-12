@@ -67,12 +67,17 @@
     </el-container>
 
     <!-- 音乐播放器 -->
-    <MusicPlayer :song="currentSong" :singers="singers" />
+    <MusicPlayer
+      :song="currentSong"
+      :singers="singers"
+      @play-next="handlePlayNext"
+      @play-previous="handlePlayPrevious"
+    />
   </el-container>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, provide } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, provide } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { User, ArrowDown, Headset, Microphone, Menu, Star } from '@element-plus/icons-vue'
@@ -87,12 +92,45 @@ const userInfo = ref({})
 const activeMenu = computed(() => route.path)
 const currentSong = ref(null)
 const singers = ref([])
+const playlist = ref([])
+const currentIndex = ref(-1)
 
 const handlePlaySong = (song) => {
   currentSong.value = song
+  // 更新播放列表中的当前索引
+  const index = playlist.value.findIndex(s => s.id === song.id)
+  if (index !== -1) {
+    currentIndex.value = index
+  } else {
+    // 如果歌曲不在播放列表中，添加到播放列表
+    playlist.value.push(song)
+    currentIndex.value = playlist.value.length - 1
+  }
+}
+
+const handlePlayNext = () => {
+  if (playlist.value.length === 0) return null
+  currentIndex.value = (currentIndex.value + 1) % playlist.value.length
+  currentSong.value = playlist.value[currentIndex.value]
+  return currentSong.value
+}
+
+const handlePlayPrevious = () => {
+  if (playlist.value.length === 0) return null
+  currentIndex.value = currentIndex.value - 1
+  if (currentIndex.value < 0) {
+    currentIndex.value = playlist.value.length - 1
+  }
+  currentSong.value = playlist.value[currentIndex.value]
+  return currentSong.value
+}
+
+const setPlaylist = (songs) => {
+  playlist.value = songs
 }
 
 provide('playSong', handlePlaySong)
+provide('setPlaylist', setPlaylist)
 
 const getAvatarUrl = (url) => {
   if (!url) return ''
@@ -100,7 +138,7 @@ const getAvatarUrl = (url) => {
   return `http://localhost:8082${url}`
 }
 
-onMounted(async () => {
+const loadUserInfo = async () => {
   username.value = localStorage.getItem('username') || '用户'
   const userId = localStorage.getItem('userId')
 
@@ -116,6 +154,16 @@ onMounted(async () => {
       console.error('加载用户信息失败', error)
     }
   }
+}
+
+const handleAvatarUpdate = (event) => {
+  if (event.detail && event.detail.avatarUrl) {
+    userInfo.value.avatarUrl = event.detail.avatarUrl
+  }
+}
+
+onMounted(async () => {
+  await loadUserInfo()
 
   // 加载歌手列表
   try {
@@ -124,6 +172,14 @@ onMounted(async () => {
   } catch (error) {
     console.error('加载歌手失败', error)
   }
+
+  // 监听头像更新事件
+  window.addEventListener('user-avatar-updated', handleAvatarUpdate)
+})
+
+onBeforeUnmount(() => {
+  // 清理事件监听器
+  window.removeEventListener('user-avatar-updated', handleAvatarUpdate)
 })
 
 const handleMenuSelect = (index) => {

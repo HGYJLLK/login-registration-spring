@@ -2,11 +2,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
 import Layout from '../views/Layout.vue'
-import Nav1 from '../views/Nav1.vue'
-import Nav2 from '../views/Nav2.vue'
-import Nav3 from '../views/Nav3.vue'
-import Nav4 from '../views/Nav4.vue'
-import MusicList from '../views/MusicList.vue'
 import Admin from '../views/Admin.vue'
 import Singers from '../views/Singers.vue'
 import SongLists from '../views/SongLists.vue'
@@ -33,33 +28,8 @@ const routes = [
     path: '/home',
     name: 'Home',
     component: Layout,
-    redirect: '/home/nav1',
+    redirect: '/home/singers',
     children: [
-      {
-        path: 'nav1',
-        name: 'Nav1',
-        component: Nav1
-      },
-      {
-        path: 'nav2',
-        name: 'Nav2',
-        component: Nav2
-      },
-      {
-        path: 'nav3',
-        name: 'Nav3',
-        component: Nav3
-      },
-      {
-        path: 'nav4',
-        name: 'Nav4',
-        component: Nav4
-      },
-      {
-        path: 'music',
-        name: 'Music',
-        component: MusicList
-      },
       {
         path: 'singers',
         name: 'Singers',
@@ -102,6 +72,7 @@ const router = createRouter({
 // 路由守卫
 router.beforeEach((to, from, next) => {
   const username = localStorage.getItem('username')
+  const isAdmin = localStorage.getItem('isAdmin') === 'true'
   const publicPages = ['/login', '/register', '/admin']  // 管理员页面无需登录也可访问
   const isPublicPage = publicPages.includes(to.path)
 
@@ -109,8 +80,12 @@ router.beforeEach((to, from, next) => {
     // 未登录，跳转到登录页
     next('/login')
   } else if ((to.path === '/login' || to.path === '/register') && username) {
-    // 已登录，跳转到首页
-    next('/home')
+    // 已登录，根据用户类型跳转
+    if (isAdmin) {
+      next('/admin')
+    } else {
+      next('/home')
+    }
   } else {
     next()
   }

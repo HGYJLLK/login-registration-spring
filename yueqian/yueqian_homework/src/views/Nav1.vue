@@ -39,6 +39,7 @@
         </el-table-column>
         <el-table-column prop="gender" label="性别" width="100" />
         <el-table-column prop="phonenumber" label="手机号码" min-width="150" />
+        <el-table-column prop="email" label="邮箱" min-width="200" show-overflow-tooltip />
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="scope">
             <el-button type="primary" size="default" @click="handleEdit(scope.row)">
@@ -77,6 +78,9 @@
         </el-form-item>
         <el-form-item label="手机号码" prop="phonenumber">
           <el-input v-model="editForm.phonenumber" />
+        </el-form-item>
+        <el-form-item label="邮箱" prop="email">
+          <el-input v-model="editForm.email" placeholder="请输入邮箱" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -145,7 +149,8 @@ const editForm = ref({
   username: '',
   password: '',
   gender: '',
-  phonenumber: ''
+  phonenumber: '',
+  email: ''
 })
 
 // 新增用户相关状态
@@ -177,6 +182,9 @@ const rules = {
   phonenumber: [
     { required: true, message: '请输入手机号码', trigger: 'blur' },
     { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号码', trigger: 'blur' }
+  ],
+  email: [
+    { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }
   ]
 }
 
@@ -266,7 +274,8 @@ const handleEdit = (row) => {
     username: row.username,
     password: '',
     gender: row.gender,
-    phonenumber: row.phonenumber
+    phonenumber: row.phonenumber,
+    email: row.email || ''
   }
   dialogVisible.value = true
 }
@@ -282,7 +291,8 @@ const handleSave = async () => {
           name: editForm.value.name,
           username: editForm.value.username,
           gender: editForm.value.gender,
-          phonenumber: editForm.value.phonenumber
+          phonenumber: editForm.value.phonenumber,
+          email: editForm.value.email
         }
 
         // 如果密码不为空，则包含密码字段

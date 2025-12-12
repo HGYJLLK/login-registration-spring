@@ -55,9 +55,15 @@
                 </template>
               </el-table-column>
               <el-table-column prop="username" label="用户名" width="120" />
+              <el-table-column prop="password" label="密码" width="200" show-overflow-tooltip>
+                <template #default="scope">
+                  <span style="font-family: monospace; font-size: 12px;">{{ scope.row.password }}</span>
+                </template>
+              </el-table-column>
               <el-table-column prop="name" label="姓名" width="120" />
               <el-table-column prop="gender" label="性别" width="80" />
               <el-table-column prop="phonenumber" label="手机号" width="140" />
+              <el-table-column prop="email" label="邮箱" width="180" show-overflow-tooltip />
               <el-table-column label="操作" width="200">
                 <template #default="scope">
                   <el-button size="small" @click="editUser(scope.row)">编辑</el-button>
@@ -104,7 +110,6 @@
               </el-table-column>
               <el-table-column prop="name" label="歌曲名" width="150" />
               <el-table-column prop="singerName" label="歌手" width="120" />
-              <el-table-column prop="duration" label="时长(秒)" width="100" />
               <el-table-column label="操作" width="200">
                 <template #default="scope">
                   <el-button size="small" @click="editSong(scope.row)">编辑</el-button>
@@ -170,6 +175,12 @@
         </el-form-item>
         <el-form-item label="手机号">
           <el-input v-model="currentUser.phonenumber" />
+        </el-form-item>
+        <el-form-item label="邮箱">
+          <el-input v-model="currentUser.email" type="email" placeholder="请输入邮箱" />
+        </el-form-item>
+        <el-form-item label="密码">
+          <el-input v-model="currentUser.password" type="password" placeholder="不修改请留空" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -371,6 +382,8 @@ const handleMenuSelect = (key) => {
 // 退出登录
 const logout = () => {
   localStorage.removeItem('username')
+  localStorage.removeItem('userId')
+  localStorage.removeItem('isAdmin')
   router.push('/login')
 }
 

@@ -94,6 +94,7 @@ const searchText = ref('')
 const userFavorites = ref([])
 const userId = ref(null)
 const playSongHandler = inject('playSong')
+const setPlaylistHandler = inject('setPlaylist')
 
 const pageTitle = computed(() => {
   if (route.query.singerName) {
@@ -187,6 +188,10 @@ const loadSongs = async () => {
       res = await axios.get('http://localhost:8082/api/music/song')
     }
     songs.value = res.data
+    // 更新播放列表
+    if (setPlaylistHandler) {
+      setPlaylistHandler(songs.value)
+    }
   } catch (error) {
     console.error('加载歌曲失败', error)
     ElMessage.error('加载歌曲失败')

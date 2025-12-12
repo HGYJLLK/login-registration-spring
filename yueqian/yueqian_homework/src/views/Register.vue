@@ -3,7 +3,8 @@
     <el-card class="register-card">
       <template #header>
         <div class="card-header">
-          <span>用户注册</span>
+          <img src="/music.svg" alt="音乐" class="header-icon" />
+          <span>音乐播放器注册</span>
         </div>
       </template>
 
@@ -219,17 +220,28 @@ const goToLogin = () => {
   align-items: center;
   min-height: 100vh;
   padding: 20px 0;
-  background-color: #f5f5f5;
+  background-color: #121212;
 }
 
 .register-card {
   width: 500px;
+  background-color: #181818;
+  border: 1px solid #282828;
 }
 
 .card-header {
-  text-align: center;
-  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 24px;
   font-weight: bold;
+  color: #FFFFFF;
+}
+
+.header-icon {
+  width: 32px;
+  height: 32px;
 }
 
 .avatar-upload {
@@ -239,6 +251,112 @@ const goToLogin = () => {
 }
 
 .avatar-preview {
-  background-color: #f5f5f5;
+  background-color: #282828;
+  border: 2px solid #1db954;
+}
+
+/* Card 深色主题 */
+:deep(.el-card) {
+  background-color: #181818;
+  border: 1px solid #282828;
+}
+
+:deep(.el-card__header) {
+  background-color: #1E1E1E;
+  border-bottom: 1px solid #282828;
+  color: #FFFFFF;
+}
+
+:deep(.el-card__body) {
+  background-color: #181818;
+}
+
+/* 表单深色主题 */
+:deep(.el-form-item__label) {
+  color: #B3B3B3;
+}
+
+:deep(.el-input__wrapper) {
+  background-color: #282828;
+  box-shadow: none;
+  border: 1px solid #404040;
+}
+
+:deep(.el-input__inner) {
+  color: #FFFFFF;
+}
+
+:deep(.el-input__inner::placeholder) {
+  color: #666666;
+}
+
+:deep(.el-input__wrapper:hover) {
+  border-color: #1db954;
+}
+
+:deep(.el-input__wrapper.is-focus) {
+  border-color: #1db954;
+  box-shadow: 0 0 0 1px #1db954 inset;
+}
+
+/* Select 下拉框深色主题 */
+:deep(.el-select__wrapper) {
+  background-color: #282828;
+  box-shadow: none;
+  border: 1px solid #404040;
+}
+
+:deep(.el-select__wrapper:hover) {
+  border-color: #1db954;
+}
+
+:deep(.el-select__wrapper.is-focused) {
+  border-color: #1db954;
+  box-shadow: 0 0 0 1px #1db954 inset;
+}
+
+:deep(.el-select__placeholder) {
+  color: #666666;
+}
+
+:deep(.el-select-dropdown) {
+  background-color: #282828;
+  border: 1px solid #404040;
+}
+
+:deep(.el-select-dropdown__item) {
+  color: #FFFFFF;
+}
+
+:deep(.el-select-dropdown__item:hover) {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+:deep(.el-select-dropdown__item.selected) {
+  color: #1db954;
+  background-color: rgba(29, 185, 84, 0.1);
+}
+
+/* 按钮样式 */
+:deep(.el-button--primary) {
+  background-color: #1db954;
+  border-color: #1db954;
+}
+
+:deep(.el-button--primary:hover) {
+  background-color: #1ed760;
+  border-color: #1ed760;
+}
+
+:deep(.el-button--default) {
+  background-color: transparent;
+  border-color: #B3B3B3;
+  color: #FFFFFF;
+}
+
+:deep(.el-button--default:hover) {
+  border-color: #FFFFFF;
+  color: #FFFFFF;
+  background-color: rgba(255, 255, 255, 0.1);
 }
 </style>

@@ -50,6 +50,9 @@ public class UserController {
                     if (updates.containsKey("avatarUrl")) {
                         user.setAvatarUrl(updates.get("avatarUrl"));
                     }
+                    if (updates.containsKey("email")) {
+                        user.setEmail(updates.get("email"));
+                    }
                     userRepository.save(user);
                     return ResponseEntity.ok(Map.of(
                             "message", "更新成功",

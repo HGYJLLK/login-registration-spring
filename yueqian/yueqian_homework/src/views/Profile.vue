@@ -160,11 +160,12 @@ const handleAvatarSuccess = async (response) => {
     ElMessage.success('头像上传成功')
     // 自动保存头像
     try {
-      await axios.post('http://localhost:8082/api/users/update', {
-        id: userForm.id,
+      await axios.put(`http://localhost:8082/api/users/${userForm.id}`, {
         avatarUrl: response.url
       })
       ElMessage.success('头像已保存')
+      // 触发存储事件通知其他组件更新
+      window.dispatchEvent(new CustomEvent('user-avatar-updated', { detail: { avatarUrl: response.url } }))
     } catch (error) {
       console.error('保存头像失败', error)
       ElMessage.error('保存头像失败')
@@ -210,7 +211,6 @@ const saveProfile = async () => {
     saving.value = true
     try {
       const updateData = {
-        id: userForm.id,
         name: userForm.name,
         email: userForm.email,
         avatarUrl: userInfo.value.avatarUrl
@@ -221,7 +221,7 @@ const saveProfile = async () => {
         updateData.password = userForm.newPassword
       }
 
-      await axios.post('http://localhost:8082/api/users/update', updateData)
+      await axios.put(`http://localhost:8082/api/users/${userForm.id}`, updateData)
 
       ElMessage.success('保存成功')
 

@@ -67,9 +67,17 @@
           <el-table :data="songListSongs" style="width: 100%">
             <el-table-column type="index" label="#" width="50" />
             <el-table-column prop="name" label="歌曲名" />
-            <el-table-column prop="introduction" label="简介" show-overflow-tooltip />
-            <el-table-column label="操作" width="120">
+            <el-table-column label="操作" width="200">
               <template #default="{ row }">
+                <el-button
+                  type="primary"
+                  size="small"
+                  @click.stop="handlePlaySong(row)"
+                  style="margin-right: 8px;"
+                >
+                  <el-icon style="margin-right: 4px"><VideoPlay /></el-icon>
+                  播放
+                </el-button>
                 <el-button
                   :icon="isFavorite(row.id) ? StarFilled : Star"
                   :type="isFavorite(row.id) ? 'warning' : 'default'"
@@ -102,14 +110,33 @@ const userFavorites = ref([])
 const userId = ref(null)
 
 const playSong = inject('playSong')
+const setPlaylist = inject('setPlaylist')
 
 const playAll = () => {
   if (songListSongs.value && songListSongs.value.length > 0) {
+    // 设置播放列表
+    if (setPlaylist) {
+      setPlaylist(songListSongs.value)
+    }
+    // 播放第一首
     if (playSong) {
       playSong(songListSongs.value[0])
+      ElMessage.success('开始播放歌单')
     }
   } else {
     ElMessage.warning('歌单为空')
+  }
+}
+
+const handlePlaySong = (song) => {
+  // 设置播放列表
+  if (setPlaylist) {
+    setPlaylist(songListSongs.value)
+  }
+  // 播放选中的歌曲
+  if (playSong) {
+    playSong(song)
+    ElMessage.success(`正在播放: ${song.name}`)
   }
 }
 

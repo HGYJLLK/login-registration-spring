@@ -1,12 +1,12 @@
 <template>
-  <div class="music-player" v-if="currentSong">
+  <div class="music-player">
     <div class="player-container">
       <!-- 歌曲信息 -->
       <div class="song-info">
-        <img :src="getSongPic(currentSong.picUrl)" alt="封面" class="cover" @error="handleImageError" />
+        <img :src="getSongPic(currentSong?.picUrl)" alt="封面" class="cover" @error="handleImageError" />
         <div class="info">
-          <div class="song-name">{{ currentSong.name }}</div>
-          <div class="singer-name">{{ getSingerName(currentSong.singerId) }}</div>
+          <div class="song-name">{{ currentSong?.name || '未播放' }}</div>
+          <div class="singer-name">{{ currentSong ? getSingerName(currentSong.singerId) : '选择一首歌曲开始播放' }}</div>
         </div>
       </div>
 
@@ -61,7 +61,7 @@
 
 <script setup>
 import { ref, watch, onBeforeUnmount } from 'vue'
-import { VideoPlay, VideoPause, Microphone, Mute, Close } from '@element-plus/icons-vue'
+import { VideoPlay, VideoPause, Microphone, Mute, ArrowLeftBold, ArrowRightBold } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 
 const props = defineProps({
@@ -74,6 +74,8 @@ const props = defineProps({
     default: () => []
   }
 })
+
+const emit = defineEmits(['play-next', 'play-previous'])
 
 const audioRef = ref(null)
 const currentSong = ref(null)
@@ -150,6 +152,16 @@ const toggleMute = () => {
 const handleEnded = () => {
   isPlaying.value = false
   currentTime.value = 0
+}
+
+// 上一首
+const playPrevious = () => {
+  emit('play-previous')
+}
+
+// 下一首
+const playNext = () => {
+  emit('play-next')
 }
 
 // 关闭播放器
