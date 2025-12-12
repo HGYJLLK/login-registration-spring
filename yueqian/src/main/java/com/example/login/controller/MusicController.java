@@ -2,6 +2,8 @@ package com.example.login.controller;
 
 import com.example.login.model.Singer;
 import com.example.login.model.Song;
+import com.example.login.model.SongList;
+import com.example.login.model.ListSong;
 import com.example.login.service.MusicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -225,6 +227,97 @@ public class MusicController {
         musicService.deleteSong(id);
         Map<String, Object> response = new HashMap<>();
         response.put("message", "删除成功");
+        response.put("success", true);
+        return ResponseEntity.ok(response);
+    }
+
+    // ==================== 歌单管理API ====================
+
+    /**
+     * 获取所有歌单
+     * GET /music/songlist/all
+     */
+    @GetMapping("/songlist/all")
+    public ResponseEntity<?> getAllSongLists() {
+        List<SongList> songLists = musicService.getAllSongLists();
+        return ResponseEntity.ok(songLists);
+    }
+
+    /**
+     * 添加歌单
+     * POST /music/songlist/add
+     */
+    @PostMapping("/songlist/add")
+    public ResponseEntity<?> addSongList(@RequestBody SongList songList) {
+        SongList saved = musicService.addSongList(songList);
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "添加成功");
+        response.put("success", true);
+        response.put("data", saved);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 更新歌单
+     * POST /music/songlist/update
+     */
+    @PostMapping("/songlist/update")
+    public ResponseEntity<?> updateSongList(@RequestBody SongList songList) {
+        SongList updated = musicService.updateSongList(songList);
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "更新成功");
+        response.put("success", true);
+        response.put("data", updated);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 删除歌单
+     * DELETE /music/songlist/delete?id=1
+     */
+    @DeleteMapping("/songlist/delete")
+    public ResponseEntity<?> deleteSongList(@RequestParam Integer id) {
+        musicService.deleteSongList(id);
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "删除成功");
+        response.put("success", true);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 获取歌单中的歌曲列表
+     * GET /music/songlist/songs?id=1
+     */
+    @GetMapping("/songlist/songs")
+    public ResponseEntity<?> getSongListSongs(@RequestParam Integer id) {
+        List<Song> songs = musicService.getSongListSongs(id);
+        return ResponseEntity.ok(songs);
+    }
+
+    /**
+     * 添加歌曲到歌单
+     * POST /music/songlist/add-song
+     */
+    @PostMapping("/songlist/add-song")
+    public ResponseEntity<?> addSongToList(@RequestBody Map<String, Integer> params) {
+        Integer songListId = params.get("songListId");
+        Integer songId = params.get("songId");
+        musicService.addSongToList(songListId, songId);
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "添加成功");
+        response.put("success", true);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 从歌单移除歌曲
+     * DELETE /music/songlist/remove-song
+     */
+    @DeleteMapping("/songlist/remove-song")
+    public ResponseEntity<?> removeSongFromList(@RequestParam Integer songListId, @RequestParam Integer songId) {
+        musicService.removeSongFromList(songListId, songId);
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "移除成功");
         response.put("success", true);
         return ResponseEntity.ok(response);
     }

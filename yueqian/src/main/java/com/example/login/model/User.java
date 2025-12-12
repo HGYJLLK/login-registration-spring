@@ -17,6 +17,9 @@ public class User {
     private String phonenumber;
     private String identitycode;
 
+    @Column(name = "avatar_url", length = 500)
+    private String avatarUrl;
+
     // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -38,4 +41,7 @@ public class User {
 
     public String getIdentitycode() { return identitycode; }
     public void setIdentitycode(String identitycode) { this.identitycode = identitycode; }
+
+    public String getAvatarUrl() { return avatarUrl; }
+    public void setAvatarUrl(String avatarUrl) { this.avatarUrl = avatarUrl; }
 }

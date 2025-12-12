@@ -47,6 +47,9 @@ public class UserController {
                     if (updates.containsKey("phonenumber")) {
                         user.setPhonenumber(updates.get("phonenumber"));
                     }
+                    if (updates.containsKey("avatarUrl")) {
+                        user.setAvatarUrl(updates.get("avatarUrl"));
+                    }
                     userRepository.save(user);
                     return ResponseEntity.ok(Map.of(
                             "message", "更新成功",

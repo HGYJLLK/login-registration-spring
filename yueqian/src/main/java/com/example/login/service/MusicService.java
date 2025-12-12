@@ -4,11 +4,17 @@ import com.example.login.model.Singer;
 import com.example.login.model.SingerRepository;
 import com.example.login.model.Song;
 import com.example.login.model.SongRepository;
+import com.example.login.model.SongList;
+import com.example.login.model.SongListRepository;
+import com.example.login.model.ListSong;
+import com.example.login.model.ListSongRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class MusicService {
@@ -18,6 +24,12 @@ public class MusicService {
 
     @Autowired
     private SongRepository songRepository;
+
+    @Autowired
+    private SongListRepository songListRepository;
+
+    @Autowired
+    private ListSongRepository listSongRepository;
 
     // ==================== Singer Methods ====================
 
@@ -96,5 +108,50 @@ public class MusicService {
     // 删除歌曲
     public void deleteSong(Integer id) {
         songRepository.deleteById(id);
+    }
+
+    // ==================== SongList Methods ====================
+
+    // 获取所有歌单
+    public List<SongList> getAllSongLists() {
+        return songListRepository.findAll();
+    }
+
+    // 添加歌单
+    public SongList addSongList(SongList songList) {
+        return songListRepository.save(songList);
+    }
+
+    // 更新歌单
+    public SongList updateSongList(SongList songList) {
+        return songListRepository.save(songList);
+    }
+
+    // 删除歌单
+    @Transactional
+    public void deleteSongList(Integer id) {
+        listSongRepository.deleteBySongListId(id);
+        songListRepository.deleteById(id);
+    }
+
+    // 获取歌单中的歌曲列表
+    public List<Song> getSongListSongs(Integer songListId) {
+        List<ListSong> listSongs = listSongRepository.findBySongListId(songListId);
+        List<Integer> songIds = listSongs.stream()
+                .map(ListSong::getSongId)
+                .collect(Collectors.toList());
+        return songRepository.findAllById(songIds);
+    }
+
+    // 添加歌曲到歌单
+    public void addSongToList(Integer songListId, Integer songId) {
+        ListSong listSong = new ListSong(songListId, songId);
+        listSongRepository.save(listSong);
+    }
+
+    // 从歌单移除歌曲
+    @Transactional
+    public void removeSongFromList(Integer songListId, Integer songId) {
+        listSongRepository.deleteBySongListIdAndSongId(songListId, songId);
     }
 }

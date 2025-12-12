@@ -7,6 +7,7 @@ import Nav2 from '../views/Nav2.vue'
 import Nav3 from '../views/Nav3.vue'
 import Nav4 from '../views/Nav4.vue'
 import MusicList from '../views/MusicList.vue'
+import Admin from '../views/Admin.vue'
 
 const routes = [
   {
@@ -53,8 +54,13 @@ const routes = [
         path: 'music',
         name: 'Music',
         component: MusicList
-      }
+      },
     ]
+  },
+  {
+    path: '/admin',
+    name: 'Admin',
+    component: Admin
   }
 ]
 
@@ -66,7 +72,7 @@ const router = createRouter({
 // 路由守卫
 router.beforeEach((to, from, next) => {
   const username = localStorage.getItem('username')
-  const publicPages = ['/login', '/register']
+  const publicPages = ['/login', '/register', '/admin']  // 管理员页面无需登录也可访问
   const isPublicPage = publicPages.includes(to.path)
 
   if (!isPublicPage && !username) {
