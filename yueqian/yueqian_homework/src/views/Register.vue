@@ -43,6 +43,27 @@
           <el-input v-model="registerForm.phonenumber" placeholder="请输入手机号码" />
         </el-form-item>
 
+        <el-form-item label="头像">
+          <div class="avatar-upload">
+            <el-avatar
+              :src="getAvatarUrl(registerForm.avatarUrl)"
+              :size="80"
+              class="avatar-preview"
+            />
+            <el-upload
+              :action="uploadUrl"
+              :show-file-list="false"
+              :on-success="handleAvatarSuccess"
+              :before-upload="beforeAvatarUpload"
+              accept="image/*"
+            >
+              <el-button type="primary" size="small">
+                选择头像
+              </el-button>
+            </el-upload>
+          </div>
+        </el-form-item>
+
         <el-form-item>
           <el-button type="primary" @click="handleRegister" :loading="loading" style="width: 100%">
             注册
@@ -75,8 +96,11 @@ const registerForm = reactive({
   confirmPassword: '',
   name: '',
   gender: '',
-  phonenumber: ''
+  phonenumber: '',
+  avatarUrl: ''
 })
+
+const uploadUrl = 'http://localhost:8082/api/file/avatar'
 
 const validatePassword = (rule, value, callback) => {
   if (value === '') {
@@ -123,6 +147,36 @@ const rules = {
   ]
 }
 
+const getAvatarUrl = (url) => {
+  if (!url) return ''
+  if (url.startsWith('http')) return url
+  return `http://localhost:8082${url}`
+}
+
+const handleAvatarSuccess = (response) => {
+  if (response.url) {
+    registerForm.avatarUrl = response.url
+    ElMessage.success('头像上传成功')
+  } else {
+    ElMessage.error('头像上传失败')
+  }
+}
+
+const beforeAvatarUpload = (file) => {
+  const isImage = file.type.startsWith('image/')
+  const isLt2M = file.size / 1024 / 1024 < 2
+
+  if (!isImage) {
+    ElMessage.error('只能上传图片文件!')
+    return false
+  }
+  if (!isLt2M) {
+    ElMessage.error('图片大小不能超过 2MB!')
+    return false
+  }
+  return true
+}
+
 const handleRegister = async () => {
   if (!registerFormRef.value) return
 
@@ -135,7 +189,8 @@ const handleRegister = async () => {
           password: registerForm.password,
           name: registerForm.name,
           gender: registerForm.gender,
-          phonenumber: registerForm.phonenumber
+          phonenumber: registerForm.phonenumber,
+          avatarUrl: registerForm.avatarUrl
         })
         if (res.success) {
           ElMessage.success('注册成功，请登录')
@@ -175,5 +230,15 @@ const goToLogin = () => {
   text-align: center;
   font-size: 20px;
   font-weight: bold;
+}
+
+.avatar-upload {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.avatar-preview {
+  background-color: #f5f5f5;
 }
 </style>

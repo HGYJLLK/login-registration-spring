@@ -321,4 +321,56 @@ public class MusicController {
         response.put("success", true);
         return ResponseEntity.ok(response);
     }
+
+    // ==================== 收藏管理API ====================
+
+    /**
+     * 添加收藏
+     * POST /music/favorite/add
+     */
+    @PostMapping("/favorite/add")
+    public ResponseEntity<?> addFavorite(@RequestBody Map<String, Object> params) {
+        Long userId = Long.valueOf(params.get("userId").toString());
+        Integer songId = Integer.valueOf(params.get("songId").toString());
+        musicService.addFavorite(userId, songId);
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "收藏成功");
+        response.put("success", true);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 取消收藏
+     * DELETE /music/favorite/remove
+     */
+    @DeleteMapping("/favorite/remove")
+    public ResponseEntity<?> removeFavorite(@RequestParam Long userId, @RequestParam Integer songId) {
+        musicService.removeFavorite(userId, songId);
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "已取消收藏");
+        response.put("success", true);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 获取用户收藏的歌曲
+     * GET /music/favorite/list?userId=1
+     */
+    @GetMapping("/favorite/list")
+    public ResponseEntity<?> getFavorites(@RequestParam Long userId) {
+        List<Song> songs = musicService.getUserFavorites(userId);
+        return ResponseEntity.ok(songs);
+    }
+
+    /**
+     * 检查是否已收藏
+     * GET /music/favorite/check?userId=1&songId=1
+     */
+    @GetMapping("/favorite/check")
+    public ResponseEntity<?> checkFavorite(@RequestParam Long userId, @RequestParam Integer songId) {
+        boolean isFavorite = musicService.isFavorite(userId, songId);
+        Map<String, Object> response = new HashMap<>();
+        response.put("isFavorite", isFavorite);
+        return ResponseEntity.ok(response);
+    }
 }

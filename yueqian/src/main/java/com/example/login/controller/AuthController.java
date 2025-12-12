@@ -78,10 +78,14 @@ public class AuthController {
         boolean success = authService.authenticate(username, password);
 
         if (success) {
-            return ResponseEntity.ok(Map.of(
-                    "message", "登录成功",
-                    "success", true
-            ));
+            var user = authService.getUserByUsername(username);
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "登录成功");
+            response.put("success", true);
+            response.put("userId", user.getId());
+            response.put("username", user.getUsername());
+            response.put("name", user.getName());
+            return ResponseEntity.ok(response);
         } else {
             return ResponseEntity.badRequest().body(Map.of(
                     "message", "用户名或密码错误",

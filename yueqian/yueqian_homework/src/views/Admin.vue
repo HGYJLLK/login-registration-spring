@@ -1,19 +1,27 @@
 <template>
   <div class="admin-container">
-    <el-container style="height: 100vh">
+    <el-container class="layout-container">
       <!-- 顶部导航栏 -->
-      <el-header style="background-color: #409EFF; color: white; display: flex; justify-content: space-between; align-items: center;">
-        <h2 style="margin: 0;">音乐管理系统</h2>
-        <div>
-          <span style="margin-right: 15px;">管理员</span>
+      <el-header class="header">
+        <div class="header-left">
+          <img src="/music.svg" alt="音乐" class="header-icon" />
+          <span>音乐管理系统 - 管理员</span>
+        </div>
+        <div class="header-right">
           <el-button type="danger" size="small" @click="logout">退出登录</el-button>
         </div>
       </el-header>
 
       <el-container>
         <!-- 左侧导航菜单 -->
-        <el-aside width="200px" style="background-color: #f5f5f5;">
-          <el-menu :default-active="activeMenu" @select="handleMenuSelect">
+        <el-aside width="200px" class="aside">
+          <el-menu
+            :default-active="activeMenu"
+            @select="handleMenuSelect"
+            background-color="#000000"
+            text-color="#B3B3B3"
+            active-text-color="#1db954"
+          >
             <el-menu-item index="consumer">
               <el-icon><User /></el-icon>
               <span>用户管理</span>
@@ -34,7 +42,7 @@
         </el-aside>
 
         <!-- 主内容区域 -->
-        <el-main style="background-color: #fff; padding: 20px;">
+        <el-main class="main">
           <!-- 用户管理模块 -->
           <div v-if="activeMenu === 'consumer'">
             <h3>用户管理</h3>
@@ -699,6 +707,69 @@ const removeSongFromCurrentList = async (songId) => {
 </script>
 
 <style scoped>
+.admin-container {
+  height: 100vh;
+  background-color: #121212;
+}
+
+.layout-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #121212;
+  border-bottom: 1px solid #282828;
+  padding: 0 20px;
+  height: 60px;
+  z-index: 1000;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.header-icon {
+  width: 28px;
+  height: 28px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+.aside {
+  background-color: #000000;
+  color: #fff;
+  height: 100%;
+}
+
+.main {
+  background-color: #121212;
+  padding: 24px;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  color: #FFFFFF;
+}
+
+.main h3 {
+  color: #FFFFFF;
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: 700;
+}
+
 .avatar-img {
   width: 60px;
   height: 60px;
@@ -727,6 +798,108 @@ const removeSongFromCurrentList = async (songId) => {
 }
 
 .avatar-uploader-icon:hover {
-  border-color: #409EFF;
+  border-color: #1db954;
+}
+
+/* 表格样式 */
+:deep(.el-table) {
+  background-color: transparent;
+  color: #FFFFFF;
+}
+
+:deep(.el-table th.el-table__cell) {
+  background-color: #181818;
+  color: #FFFFFF;
+  border-bottom: 1px solid #282828;
+}
+
+:deep(.el-table tr) {
+  background-color: transparent;
+}
+
+:deep(.el-table td.el-table__cell) {
+  border-bottom: 1px solid #282828;
+}
+
+:deep(.el-table__body tr:hover > td) {
+  background-color: #282828 !important;
+}
+
+:deep(.el-table--striped .el-table__body tr.el-table__row--striped td) {
+  background-color: #181818;
+}
+
+/* 对话框样式 */
+:deep(.el-dialog) {
+  background-color: #181818;
+}
+
+:deep(.el-dialog__title) {
+  color: #FFFFFF;
+}
+
+:deep(.el-dialog__headerbtn .el-dialog__close) {
+  color: #FFFFFF;
+}
+
+:deep(.el-form-item__label) {
+  color: #FFFFFF;
+}
+
+:deep(.el-input__wrapper) {
+  background-color: #282828;
+  box-shadow: none;
+}
+
+:deep(.el-input__inner) {
+  color: #FFFFFF;
+}
+
+:deep(.el-input__inner)::placeholder {
+  color: #B3B3B3;
+}
+
+:deep(.el-textarea__inner) {
+  background-color: #282828;
+  color: #FFFFFF;
+  box-shadow: none;
+}
+
+:deep(.el-select .el-input__wrapper) {
+  background-color: #282828;
+}
+
+:deep(.el-select-dropdown) {
+  background-color: #282828;
+}
+
+:deep(.el-select-dropdown__item) {
+  color: #FFFFFF;
+}
+
+:deep(.el-select-dropdown__item:hover) {
+  background-color: #383838;
+}
+
+:deep(.el-select-dropdown__item.selected) {
+  color: #1db954;
+}
+
+:deep(.el-divider) {
+  border-color: #282828;
+}
+
+:deep(.el-menu) {
+  border-right: none;
+}
+
+:deep(.el-upload) {
+  border: 1px dashed #282828;
+  border-radius: 8px;
+  background-color: #282828;
+}
+
+:deep(.el-upload:hover) {
+  border-color: #1db954;
 }
 </style>

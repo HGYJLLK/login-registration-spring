@@ -9,12 +9,19 @@
       <div class="header-right">
         <el-dropdown @command="handleCommand">
           <span class="el-dropdown-link">
-            <el-icon><User /></el-icon>
+            <el-avatar
+              v-if="userInfo.avatarUrl"
+              :src="getAvatarUrl(userInfo.avatarUrl)"
+              :size="32"
+              style="margin-right: 8px;"
+            />
+            <el-icon v-else><User /></el-icon>
             {{ username }}
             <el-icon class="el-icon--right"><ArrowDown /></el-icon>
           </span>
           <template #dropdown>
             <el-dropdown-menu>
+              <el-dropdown-item command="profile">个人中心</el-dropdown-item>
               <el-dropdown-item command="logout">退出登录</el-dropdown-item>
             </el-dropdown-menu>
           </template>
@@ -34,39 +41,89 @@
           text-color="#B3B3B3"
           active-text-color="#1db954"
         >
-          <el-menu-item index="/home/nav1">
-            <el-icon><User /></el-icon>
-            <span>用户管理</span>
+          <el-menu-item index="/home/singers">
+            <el-icon><Microphone /></el-icon>
+            <span>歌手</span>
           </el-menu-item>
-          <el-menu-item index="/home/music">
+          <el-menu-item index="/home/songlists">
+            <el-icon><Menu /></el-icon>
+            <span>歌单</span>
+          </el-menu-item>
+          <el-menu-item index="/home/songs">
             <el-icon><Headset /></el-icon>
-            <span>音乐播放器</span>
+            <span>所有歌曲</span>
+          </el-menu-item>
+          <el-menu-item index="/home/favorites">
+            <el-icon><Star /></el-icon>
+            <span>个人收藏</span>
           </el-menu-item>
         </el-menu>
       </el-aside>
 
       <!-- 主内容 -->
       <el-main class="main">
-        <router-view />
+        <router-view @play-song="handlePlaySong" :singers="singers" />
       </el-main>
     </el-container>
+
+    <!-- 音乐播放器 -->
+    <MusicPlayer :song="currentSong" :singers="singers" />
   </el-container>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, provide } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { User, ArrowDown, Headset } from '@element-plus/icons-vue'
+import { User, ArrowDown, Headset, Microphone, Menu, Star } from '@element-plus/icons-vue'
+import axios from 'axios'
+import MusicPlayer from '../components/MusicPlayer.vue'
 
 const router = useRouter()
 const route = useRoute()
 
 const username = ref('')
+const userInfo = ref({})
 const activeMenu = computed(() => route.path)
+const currentSong = ref(null)
+const singers = ref([])
 
-onMounted(() => {
+const handlePlaySong = (song) => {
+  currentSong.value = song
+}
+
+provide('playSong', handlePlaySong)
+
+const getAvatarUrl = (url) => {
+  if (!url) return ''
+  if (url.startsWith('http')) return url
+  return `http://localhost:8082${url}`
+}
+
+onMounted(async () => {
   username.value = localStorage.getItem('username') || '用户'
+  const userId = localStorage.getItem('userId')
+
+  if (userId) {
+    try {
+      const res = await axios.get(`http://localhost:8082/api/users`)
+      const user = res.data.find(u => u.id == userId)
+      if (user) {
+        userInfo.value = user
+        username.value = user.name || user.username
+      }
+    } catch (error) {
+      console.error('加载用户信息失败', error)
+    }
+  }
+
+  // 加载歌手列表
+  try {
+    const res = await axios.get('http://localhost:8082/api/music/singer')
+    singers.value = res.data
+  } catch (error) {
+    console.error('加载歌手失败', error)
+  }
 })
 
 const handleMenuSelect = (index) => {
@@ -81,10 +138,13 @@ const handleCommand = (command) => {
       type: 'warning'
     }).then(() => {
       localStorage.removeItem('username')
+      localStorage.removeItem('userId')
       localStorage.removeItem('token')
       ElMessage.success('已退出登录')
       router.push('/login')
     }).catch(() => {})
+  } else if (command === 'profile') {
+    router.push('/home/profile')
   }
 }
 </script>
@@ -157,6 +217,7 @@ const handleCommand = (command) => {
 .main {
   background-color: #121212;
   padding: 0;
+  padding-bottom: 90px;
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;

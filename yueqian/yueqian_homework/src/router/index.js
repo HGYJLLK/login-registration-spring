@@ -8,6 +8,11 @@ import Nav3 from '../views/Nav3.vue'
 import Nav4 from '../views/Nav4.vue'
 import MusicList from '../views/MusicList.vue'
 import Admin from '../views/Admin.vue'
+import Singers from '../views/Singers.vue'
+import SongLists from '../views/SongLists.vue'
+import Songs from '../views/Songs.vue'
+import Favorites from '../views/Favorites.vue'
+import Profile from '../views/Profile.vue'
 
 const routes = [
   {
@@ -55,6 +60,31 @@ const routes = [
         name: 'Music',
         component: MusicList
       },
+      {
+        path: 'singers',
+        name: 'Singers',
+        component: Singers
+      },
+      {
+        path: 'songlists',
+        name: 'SongLists',
+        component: SongLists
+      },
+      {
+        path: 'songs',
+        name: 'Songs',
+        component: Songs
+      },
+      {
+        path: 'favorites',
+        name: 'Favorites',
+        component: Favorites
+      },
+      {
+        path: 'profile',
+        name: 'Profile',
+        component: Profile
+      }
     ]
   },
   {

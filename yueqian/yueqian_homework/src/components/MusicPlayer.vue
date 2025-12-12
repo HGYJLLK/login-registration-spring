@@ -3,28 +3,33 @@
     <div class="player-container">
       <!-- 歌曲信息 -->
       <div class="song-info">
-        <img :src="currentSong.picUrl || '/music-server/img/tubiao.jpg'" alt="封面" class="cover" />
+        <img :src="getSongPic(currentSong.picUrl)" alt="封面" class="cover" @error="handleImageError" />
         <div class="info">
           <div class="song-name">{{ currentSong.name }}</div>
-          <div class="singer-name">{{ currentSong.singerName }}</div>
+          <div class="singer-name">{{ getSingerName(currentSong.singerId) }}</div>
         </div>
       </div>
 
       <!-- 播放控制 -->
       <div class="controls">
-        <el-button @click="prev" :icon="Back" circle />
-        <el-button @click="togglePlay" circle type="primary" size="large" class="play-control-btn">
-          <img v-if="!isPlaying" src="/start.svg" alt="播放" class="play-icon-svg" />
-          <el-icon v-else><VideoPause /></el-icon>
-        </el-button>
-        <el-button @click="next" :icon="Right" circle />
+        <el-icon class="control-btn" :size="28" @click="playPrevious">
+          <ArrowLeftBold />
+        </el-icon>
+        <el-icon class="control-btn play-pause-btn" :size="36" @click="togglePlay">
+          <VideoPlay v-if="!isPlaying" />
+          <VideoPause v-else />
+        </el-icon>
+        <el-icon class="control-btn" :size="28" @click="playNext">
+          <ArrowRightBold />
+        </el-icon>
       </div>
 
       <!-- 进度条 -->
       <div class="progress-container">
         <span class="time">{{ formatTime(currentTime) }}</span>
         <el-slider
-          v-model="progress"
+          v-model="currentTime"
+          :max="duration"
           :show-tooltip="false"
           @change="handleProgressChange"
           class="progress-bar"
@@ -34,102 +39,101 @@
 
       <!-- 音量控制 -->
       <div class="volume-control">
-        <el-icon @click="toggleMute">
-          <component :is="volume === 0 ? Mute : Microphone" />
+        <el-icon @click="toggleMute" class="volume-icon">
+          <Mute v-if="volume === 0" />
+          <Microphone v-else />
         </el-icon>
-        <el-slider v-model="volume" :show-tooltip="false" style="width: 100px" />
+        <el-slider v-model="volume" :show-tooltip="false" style="width: 100px" @input="handleVolumeChange" />
       </div>
 
       <!-- 音频元素 -->
       <audio
         ref="audioRef"
-        :src="currentSong.songUrl"
         @timeupdate="updateProgress"
-        @ended="next"
+        @ended="handleEnded"
         @loadedmetadata="updateDuration"
+        @play="isPlaying = true"
+        @pause="isPlaying = false"
       ></audio>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
-import { Back, Right, VideoPause, Microphone, Mute } from '@element-plus/icons-vue'
+import { ref, watch, onBeforeUnmount } from 'vue'
+import { VideoPlay, VideoPause, Microphone, Mute, Close } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
 
 const props = defineProps({
-  playlist: {
+  song: {
+    type: Object,
+    default: null
+  },
+  singers: {
     type: Array,
     default: () => []
-  },
-  currentIndex: {
-    type: Number,
-    default: 0
   }
 })
 
-const emit = defineEmits(['update:currentIndex'])
-
 const audioRef = ref(null)
+const currentSong = ref(null)
 const isPlaying = ref(false)
 const currentTime = ref(0)
 const duration = ref(0)
 const volume = ref(50)
-const progress = ref(0)
 const lastVolume = ref(50)
 
-const currentSong = computed(() => props.playlist[props.currentIndex])
+const getSongPic = (pic) => {
+  if (!pic) return '/music.svg'
+  if (pic.startsWith('http')) return pic
+  return `http://localhost:8082${pic}`
+}
+
+const handleImageError = (e) => {
+  e.target.src = '/music.svg'
+}
+
+const getSingerName = (singerId) => {
+  const singer = props.singers.find(s => s.id === singerId)
+  return singer ? singer.name : '未知歌手'
+}
 
 // 播放/暂停
 const togglePlay = () => {
+  if (!audioRef.value) return
   if (isPlaying.value) {
     audioRef.value.pause()
   } else {
     audioRef.value.play()
   }
-  isPlaying.value = !isPlaying.value
-}
-
-// 上一首
-const prev = () => {
-  let newIndex = props.currentIndex - 1
-  if (newIndex < 0) {
-    newIndex = props.playlist.length - 1
-  }
-  emit('update:currentIndex', newIndex)
-  setTimeout(() => {
-    audioRef.value.play()
-    isPlaying.value = true
-  }, 100)
-}
-
-// 下一首
-const next = () => {
-  let newIndex = props.currentIndex + 1
-  if (newIndex >= props.playlist.length) {
-    newIndex = 0
-  }
-  emit('update:currentIndex', newIndex)
-  setTimeout(() => {
-    audioRef.value.play()
-    isPlaying.value = true
-  }, 100)
 }
 
 // 更新进度
 const updateProgress = () => {
-  currentTime.value = audioRef.value.currentTime
-  progress.value = (currentTime.value / duration.value) * 100
+  if (audioRef.value) {
+    currentTime.value = audioRef.value.currentTime
+  }
 }
 
 // 更新总时长
 const updateDuration = () => {
-  duration.value = audioRef.value.duration
+  if (audioRef.value) {
+    duration.value = audioRef.value.duration
+  }
 }
 
 // 拖动进度条
 const handleProgressChange = (value) => {
-  const newTime = (value / 100) * duration.value
-  audioRef.value.currentTime = newTime
+  if (audioRef.value) {
+    audioRef.value.currentTime = value
+  }
+}
+
+// 音量变化
+const handleVolumeChange = () => {
+  if (audioRef.value) {
+    audioRef.value.volume = volume.value / 100
+  }
 }
 
 // 静音/取消静音
@@ -142,6 +146,22 @@ const toggleMute = () => {
   }
 }
 
+// 播放结束
+const handleEnded = () => {
+  isPlaying.value = false
+  currentTime.value = 0
+}
+
+// 关闭播放器
+const closePlayer = () => {
+  if (audioRef.value) {
+    audioRef.value.pause()
+    audioRef.value.currentTime = 0
+  }
+  currentSong.value = null
+  isPlaying.value = false
+}
+
 // 监听音量变化
 watch(volume, (newVolume) => {
   if (audioRef.value) {
@@ -150,20 +170,47 @@ watch(volume, (newVolume) => {
 })
 
 // 监听歌曲变化
-watch(() => props.currentIndex, () => {
-  setTimeout(() => {
-    if (isPlaying.value) {
-      audioRef.value.play()
+watch(() => props.song, (newSong) => {
+  if (newSong) {
+    // 停止当前播放
+    if (audioRef.value) {
+      audioRef.value.pause()
+      audioRef.value.currentTime = 0
     }
-  }, 100)
+
+    currentSong.value = newSong
+    const songUrl = newSong.songUrl || newSong.url
+    if (!songUrl) {
+      ElMessage.warning('该歌曲暂无音频文件')
+      return
+    }
+
+    const fullUrl = songUrl.startsWith('http') ? songUrl : `http://localhost:8082${songUrl}`
+
+    if (audioRef.value) {
+      audioRef.value.src = fullUrl
+      audioRef.value.volume = volume.value / 100
+      audioRef.value.play().catch(error => {
+        console.error('播放失败', error)
+        ElMessage.error('播放失败')
+      })
+    }
+  }
+}, { immediate: true })
+
+onBeforeUnmount(() => {
+  if (audioRef.value) {
+    audioRef.value.pause()
+    audioRef.value.src = ''
+  }
 })
 
 // 格式化时间
 const formatTime = (seconds) => {
-  if (!seconds || isNaN(seconds)) return '00:00'
+  if (!seconds || isNaN(seconds)) return '0:00'
   const mins = Math.floor(seconds / 60)
   const secs = Math.floor(seconds % 60)
-  return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
+  return mins + ':' + (secs < 10 ? '0' : '') + secs
 }
 </script>
 

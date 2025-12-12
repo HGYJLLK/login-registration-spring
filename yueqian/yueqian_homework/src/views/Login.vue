@@ -71,7 +71,11 @@ const handleLogin = async () => {
         const res = await login(loginForm)
         if (res.success) {
           // 保存用户信息
-          localStorage.setItem('username', loginForm.username)
+          localStorage.setItem('username', res.username || loginForm.username)
+          localStorage.setItem('userId', res.userId)
+          if (res.name) {
+            localStorage.setItem('name', res.name)
+          }
           ElMessage.success('登录成功')
           router.push('/home')
         } else {
@@ -79,6 +83,7 @@ const handleLogin = async () => {
         }
       } catch (error) {
         console.error('登录错误:', error)
+        ElMessage.error('登录失败')
       } finally {
         loading.value = false
       }

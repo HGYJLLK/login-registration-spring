@@ -38,4 +38,8 @@ public class AuthService {
                 .map(user -> password.equals(user.getPassword()))  // 明文比较
                 .orElse(false);
     }
+
+    public User getUserByUsername(String username) {
+        return userRepository.findByUsername(username).orElse(null);
+    }
 }

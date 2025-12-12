@@ -8,6 +8,8 @@ import com.example.login.model.SongList;
 import com.example.login.model.SongListRepository;
 import com.example.login.model.ListSong;
 import com.example.login.model.ListSongRepository;
+import com.example.login.model.Favorite;
+import com.example.login.model.FavoriteRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,9 @@ public class MusicService {
 
     @Autowired
     private ListSongRepository listSongRepository;
+
+    @Autowired
+    private FavoriteRepository favoriteRepository;
 
     // ==================== Singer Methods ====================
 
@@ -153,5 +158,35 @@ public class MusicService {
     @Transactional
     public void removeSongFromList(Integer songListId, Integer songId) {
         listSongRepository.deleteBySongListIdAndSongId(songListId, songId);
+    }
+
+    // ==================== Favorite Methods ====================
+
+    // 添加收藏
+    public void addFavorite(Long userId, Integer songId) {
+        if (!favoriteRepository.existsByUserIdAndSongId(userId, songId)) {
+            Favorite favorite = new Favorite(userId, songId);
+            favoriteRepository.save(favorite);
+        }
+    }
+
+    // 取消收藏
+    @Transactional
+    public void removeFavorite(Long userId, Integer songId) {
+        favoriteRepository.deleteByUserIdAndSongId(userId, songId);
+    }
+
+    // 获取用户收藏的歌曲列表
+    public List<Song> getUserFavorites(Long userId) {
+        List<Favorite> favorites = favoriteRepository.findByUserId(userId);
+        List<Integer> songIds = favorites.stream()
+                .map(Favorite::getSongId)
+                .collect(Collectors.toList());
+        return songRepository.findAllById(songIds);
+    }
+
+    // 检查是否已收藏
+    public boolean isFavorite(Long userId, Integer songId) {
+        return favoriteRepository.existsByUserIdAndSongId(userId, songId);
     }
 }
