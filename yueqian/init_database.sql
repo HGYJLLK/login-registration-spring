@@ -1,6 +1,31 @@
--- 音乐播放器数据库表结构
+-- 音乐播放器完整数据库初始化脚本
+-- 数据库名: queqian
+-- 执行方式: mysql -u root -p2333 < init_database.sql
 
+-- 创建数据库
+CREATE DATABASE IF NOT EXISTS queqian CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- 使用数据库
 USE queqian;
+
+-- ==================== 用户相关表 ====================
+
+-- 创建用户表
+CREATE TABLE IF NOT EXISTS tb_user (
+  id INT NOT NULL AUTO_INCREMENT,
+  username VARCHAR(50) NOT NULL UNIQUE COMMENT '用户名',
+  password VARCHAR(100) NOT NULL COMMENT '密码(BCrypt加密)',
+  name VARCHAR(50) DEFAULT NULL COMMENT '姓名',
+  gender VARCHAR(10) DEFAULT NULL COMMENT '性别',
+  phonenumber VARCHAR(50) DEFAULT NULL COMMENT '手机号码',
+  identitycode VARCHAR(50) DEFAULT NULL COMMENT '身份证号',
+  avatar_url VARCHAR(500) DEFAULT NULL COMMENT '用户头像URL',
+  email VARCHAR(100) DEFAULT NULL COMMENT '用户邮箱',
+  PRIMARY KEY (id),
+  INDEX idx_username (username)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户表';
+
+-- ==================== 音乐相关表 ====================
 
 -- 创建歌手表
 CREATE TABLE IF NOT EXISTS tb_singer (
@@ -31,32 +56,39 @@ CREATE TABLE IF NOT EXISTS tb_song (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='歌曲表';
 
 -- 创建歌单表
-CREATE TABLE IF NOT EXISTS tb_playlist (
-  id INT NOT NULL AUTO_INCREMENT,
-  name VARCHAR(200) NOT NULL COMMENT '歌单名称',
-  description TEXT COMMENT '歌单描述',
-  pic_url VARCHAR(500) DEFAULT NULL COMMENT '歌单封面图片路径',
-  user_id INT DEFAULT NULL COMMENT '创建用户ID',
+CREATE TABLE IF NOT EXISTS tb_song_list (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(200) NOT NULL COMMENT '歌单标题',
+  pic_url VARCHAR(500) DEFAULT NULL COMMENT '歌单封面URL',
+  introduction TEXT DEFAULT NULL COMMENT '歌单简介',
+  style VARCHAR(50) DEFAULT NULL COMMENT '歌单风格',
   create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  PRIMARY KEY (id),
-  INDEX idx_user_id (user_id),
-  FOREIGN KEY (user_id) REFERENCES tb_user(id) ON DELETE SET NULL
+  INDEX idx_title (title),
+  INDEX idx_style (style)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='歌单表';
 
--- 创建歌单歌曲关联表
-CREATE TABLE IF NOT EXISTS tb_playlist_song (
-  id INT NOT NULL AUTO_INCREMENT,
-  playlist_id INT NOT NULL COMMENT '歌单ID',
+-- 创建歌单-歌曲关联表
+CREATE TABLE IF NOT EXISTS tb_list_song (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  song_list_id INT NOT NULL COMMENT '歌单ID',
   song_id INT NOT NULL COMMENT '歌曲ID',
-  sort_order INT DEFAULT 0 COMMENT '排序顺序',
-  create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  PRIMARY KEY (id),
-  UNIQUE KEY uk_playlist_song (playlist_id, song_id),
-  INDEX idx_playlist_id (playlist_id),
-  INDEX idx_song_id (song_id),
-  FOREIGN KEY (playlist_id) REFERENCES tb_playlist(id) ON DELETE CASCADE,
-  FOREIGN KEY (song_id) REFERENCES tb_song(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='歌单歌曲关联表';
+  UNIQUE KEY uk_songlist_song (song_list_id, song_id),
+  INDEX idx_song_list_id (song_list_id),
+  INDEX idx_song_id (song_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='歌单-歌曲关联表';
+
+-- 创建收藏表
+CREATE TABLE IF NOT EXISTS tb_favorite (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id BIGINT NOT NULL COMMENT '用户ID',
+  song_id INT NOT NULL COMMENT '歌曲ID',
+  create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '收藏时间',
+  UNIQUE KEY uk_user_song (user_id, song_id),
+  INDEX idx_user_id (user_id),
+  INDEX idx_song_id (song_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户收藏表';
+
+-- ==================== 示例数据 ====================
 
 -- 插入示例歌手数据
 INSERT INTO tb_singer (name, pic_url) VALUES
@@ -69,7 +101,8 @@ INSERT INTO tb_singer (name, pic_url) VALUES
 ('王力宏', '/music-server/img/singerPic/wanglihong.jpg'),
 ('田馥甄', '/music-server/img/singerPic/tianfuzhen.jpg'),
 ('G.E.M.邓紫棋', '/music-server/img/singerPic/dengziqi.jpg'),
-('张国荣', '/music-server/img/singerPic/zhangguorong.jpg');
+('张国荣', '/music-server/img/singerPic/zhangguorong.jpg')
+ON DUPLICATE KEY UPDATE name=name;
 
 -- 插入示例歌曲数据
 INSERT INTO tb_song (name, singer_id, singer_name, song_url, pic_url) VALUES
@@ -90,4 +123,16 @@ INSERT INTO tb_song (name, singer_id, singer_name, song_url, pic_url) VALUES
 ('无问', 6, '毛不易', '/music-server/song/毛不易-无问.mp3', '/music-server/img/songPic/109951163681898984.jpg'),
 ('唯一', 7, '王力宏', '/music-server/song/王力宏-唯一.mp3', '/music-server/img/songPic/109951163187405670.jpg'),
 ('小幸运', 8, '田馥甄', '/music-server/song/田馥甄-小幸运.mp3', '/music-server/img/songPic/109951163099854364.jpg'),
-('泡沫', 9, 'G.E.M.邓紫棋', '/music-server/song/G.E.M.邓紫棋-泡沫.mp3', '/music-server/img/songPic/paomo.jpg');
+('泡沫', 9, 'G.E.M.邓紫棋', '/music-server/song/G.E.M.邓紫棋-泡沫.mp3', '/music-server/img/songPic/paomo.jpg')
+ON DUPLICATE KEY UPDATE name=name;
+
+-- 插入示例歌单数据
+INSERT INTO tb_song_list (title, pic_url, introduction, style) VALUES
+('热门华语', '/api/file/song-pics/default1.jpg', '最热门的华语流行歌曲精选', '流行'),
+('经典老歌', '/api/file/song-pics/default2.jpg', '那些年我们一起听过的经典', '怀旧'),
+('摇滚精选', '/api/file/song-pics/default3.jpg', '燃烧你的激情', '摇滚')
+ON DUPLICATE KEY UPDATE title=title;
+
+SELECT '数据库初始化完成！' AS message;
+SELECT '已创建的表：' AS info;
+SHOW TABLES;
