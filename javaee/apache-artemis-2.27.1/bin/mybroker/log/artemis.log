@@ -35,3 +35,10 @@
 2025-12-13 05:52:22,484 INFO  [org.apache.activemq.artemis] AMQ241002: Artemis Jolokia REST API available at http://localhost:8161/console/jolokia
 2025-12-13 05:52:22,484 INFO  [org.apache.activemq.artemis] AMQ241004: Artemis Console available at http://localhost:8161/console
 2025-12-13 05:52:26,776 WARN  [org.apache.activemq.artemis.core.server] AMQ222210: Free storage space is at 5.4GB of 245.1GB total. Usage rate is 97.8% which is beyond the configured <max-disk-usage>. System will start blocking producers.
+2025-12-13 13:08:25,393 INFO  [org.apache.activemq.artemis] AMQ241005: Stopping embedded web server
+2025-12-13 13:08:25,864 INFO  [io.hawt.web.auth.AuthenticationFilter] Destroying hawtio authentication filter
+2025-12-13 13:08:26,088 INFO  [io.hawt.HawtioContextListener] Destroying hawtio services
+2025-12-13 13:08:26,854 INFO  [org.apache.activemq.hawtio.plugin.PluginContextListener] Destroyed artemis-plugin plugin
+2025-12-13 13:08:27,024 INFO  [org.apache.activemq.hawtio.branding.PluginContextListener] Destroyed activemq-branding plugin
+2025-12-13 13:08:28,160 INFO  [org.apache.activemq.artemis] AMQ241006: Stopped embedded web server
+2025-12-13 13:08:28,240 INFO  [org.apache.activemq.artemis.core.server] AMQ221002: Apache ActiveMQ Artemis Message Broker version 2.27.1 [d5faff5e-d7a4-11f0-bf58-0ac487b65e50] stopped, uptime 7 hours 16 minutes
