@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>用户注册</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+        .container { max-width: 400px; margin: 0 auto; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; }
+        input { width: 100%; padding: 8px; box-sizing: border-box; }
+        button { padding: 10px 15px; background-color: #4CAF50; color: white; border: none; cursor: pointer; }
+        .message { margin-top: 20px; padding: 10px; background-color: #f8f8f8; }
+        .login-link { display: block; margin-top: 20px; text-align: center; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>用户注册</h2>
+    <div id="register-form">
+        <div class="form-group">
+            <label for="register-username">用户名</label>
+            <input type="text" id="register-username" placeholder="请输入用户名">
+        </div>
+        <div class="form-group">
+            <label for="register-password">密码</label>
+            <input type="password" id="register-password" placeholder="请输入密码">
+        </div>
+        <div class="form-group">
+            <label for="register-name">姓名</label>
+            <input type="text" id="register-name" placeholder="请输入姓名">
+        </div>
+        <div class="form-group">
+            <label for="register-email">邮箱</label>
+            <input type="email" id="register-email" placeholder="请输入邮箱">
+        </div>
+        <button onclick="register()">注册</button>
+    </div>
+
+    <div id="message" class="message"></div>
+    <div class="login-link">
+        已有账号？<a href="/index.html">返回登录</a>
+    </div>
+</div>
+
+<script>
+    function register() {
+        const username = document.getElementById('register-username').value;
+        const password = document.getElementById('register-password').value;
+        const name = document.getElementById('register-name').value;
+        const email = document.getElementById('register-email').value;
+
+        if (!username || !password) {
+            document.getElementById('message').innerText = '用户名和密码不能为空';
+            return;
+        }
+
+        fetch('/api/auth/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password, name, email })
+        })
+            .then(response => {
+                // 即使状态码不是2xx，也尝试解析JSON
+                return response.text().then(text => {
+                    try {
+                        // 尝试解析为JSON
+                        return { data: text ? JSON.parse(text) : {}, ok: response.ok };
+                    } catch (e) {
+                        // 如果解析失败，返回原始文本
+                        return { data: { message: text || '未知错误' }, ok: response.ok };
+                    }
+                });
+            })
+            .then(({ data, ok }) => {
+                if (ok) {
+                    document.getElementById('message').innerText = data.message || '注册成功';
+                    if (data.success) {
+                        setTimeout(() => {
+                            window.location.href = '/index.html';
+                        }, 2000);
+                    }
+                } else {
+                    document.getElementById('message').innerText = data.message || '注册失败';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('message').innerText = '注册失败，请稍后再试';
+            });
+    }
+</script>
+</body>
+</html>

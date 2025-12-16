@@ -88,3 +88,10 @@
 2025-12-14 16:25:57,355 INFO  [org.apache.activemq.artemis] AMQ241001: HTTP Server started at http://localhost:8161
 2025-12-14 16:25:57,355 INFO  [org.apache.activemq.artemis] AMQ241002: Artemis Jolokia REST API available at http://localhost:8161/console/jolokia
 2025-12-14 16:25:57,355 INFO  [org.apache.activemq.artemis] AMQ241004: Artemis Console available at http://localhost:8161/console
+2025-12-14 17:19:20,491 INFO  [org.apache.activemq.artemis] AMQ241005: Stopping embedded web server
+2025-12-14 17:19:20,504 INFO  [io.hawt.web.auth.AuthenticationFilter] Destroying hawtio authentication filter
+2025-12-14 17:19:20,517 INFO  [io.hawt.HawtioContextListener] Destroying hawtio services
+2025-12-14 17:19:20,766 INFO  [org.apache.activemq.hawtio.plugin.PluginContextListener] Destroyed artemis-plugin plugin
+2025-12-14 17:19:20,783 INFO  [org.apache.activemq.hawtio.branding.PluginContextListener] Destroyed activemq-branding plugin
+2025-12-14 17:19:20,860 INFO  [org.apache.activemq.artemis] AMQ241006: Stopped embedded web server
+2025-12-14 17:19:20,873 INFO  [org.apache.activemq.artemis.core.server] AMQ221002: Apache ActiveMQ Artemis Message Broker version 2.27.1 [d5faff5e-d7a4-11f0-bf58-0ac487b65e50] stopped, uptime 53 minutes
