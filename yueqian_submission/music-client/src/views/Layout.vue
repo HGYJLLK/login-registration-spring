@@ -240,6 +240,7 @@ const handleCommand = (command) => {
 .header-right {
   display: flex;
   align-items: center;
+  gap: 16px;
 }
 
 .el-dropdown-link {

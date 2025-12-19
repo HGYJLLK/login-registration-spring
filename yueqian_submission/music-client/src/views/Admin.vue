@@ -46,7 +46,7 @@
           <!-- 用户管理模块 -->
           <div v-if="activeMenu === 'consumer'">
             <h3>用户管理</h3>
-            <el-table :data="users" stripe style="width: 100%">
+            <el-table :data="users" stripe style="width: 100%" max-height="500">
               <el-table-column prop="id" label="ID" width="80" />
               <el-table-column label="头像" width="100">
                 <template #default="scope">
@@ -77,7 +77,7 @@
           <div v-if="activeMenu === 'singer'">
             <h3>歌手管理</h3>
             <el-button type="primary" @click="addSinger" style="margin-bottom: 20px">添加歌手</el-button>
-            <el-table :data="singers" stripe style="width: 100%">
+            <el-table :data="singers" stripe style="width: 100%" max-height="500">
               <el-table-column prop="id" label="ID" width="80" />
               <el-table-column label="图片" width="100">
                 <template #default="scope">
@@ -100,7 +100,7 @@
           <div v-if="activeMenu === 'song'">
             <h3>音乐管理</h3>
             <el-button type="primary" @click="addSong" style="margin-bottom: 20px">添加音乐</el-button>
-            <el-table :data="songs" stripe style="width: 100%">
+            <el-table :data="songs" stripe style="width: 100%" max-height="500">
               <el-table-column prop="id" label="ID" width="80" />
               <el-table-column label="封面" width="100">
                 <template #default="scope">
@@ -110,6 +110,7 @@
               </el-table-column>
               <el-table-column prop="name" label="歌曲名" width="150" />
               <el-table-column prop="singerName" label="歌手" width="120" />
+              <el-table-column prop="style" label="风格" width="100" />
               <el-table-column label="操作" width="200">
                 <template #default="scope">
                   <el-button size="small" @click="editSong(scope.row)">编辑</el-button>
@@ -123,7 +124,7 @@
           <div v-if="activeMenu === 'songlist'">
             <h3>歌单管理</h3>
             <el-button type="primary" @click="addSongList" style="margin-bottom: 20px">添加歌单</el-button>
-            <el-table :data="songLists" stripe style="width: 100%">
+            <el-table :data="songLists" stripe style="width: 100%" max-height="500">
               <el-table-column prop="id" label="ID" width="80" />
               <el-table-column label="封面" width="100">
                 <template #default="scope">
@@ -238,6 +239,18 @@
             <el-option v-for="singer in singers" :key="singer.id" :label="singer.name" :value="singer.id" />
           </el-select>
         </el-form-item>
+        <el-form-item label="歌曲风格">
+          <el-select v-model="currentSong.style" placeholder="请选择或输入风格" allow-create filterable>
+            <el-option label="流行" value="流行" />
+            <el-option label="摇滚" value="摇滚" />
+            <el-option label="民谣" value="民谣" />
+            <el-option label="古典" value="古典" />
+            <el-option label="电子" value="电子" />
+            <el-option label="爵士" value="爵士" />
+            <el-option label="嘻哈" value="嘻哈" />
+            <el-option label="R&B" value="R&B" />
+          </el-select>
+        </el-form-item>
         <el-form-item label="音乐文件">
           <el-upload
             action="http://localhost:8082/api/file/song"
@@ -303,7 +316,7 @@
         <el-button type="primary" @click="addSongToCurrentList">添加</el-button>
 
         <h4 style="margin-top: 20px;">歌单中的歌曲</h4>
-        <el-table :data="currentSongListSongs" stripe style="width: 100%">
+        <el-table :data="currentSongListSongs" stripe style="width: 100%" max-height="300">
           <el-table-column prop="id" label="ID" width="80" />
           <el-table-column prop="name" label="歌曲名" width="200" />
           <el-table-column prop="singerName" label="歌手" width="150" />

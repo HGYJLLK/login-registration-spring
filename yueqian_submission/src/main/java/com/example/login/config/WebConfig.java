@@ -17,10 +17,8 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // 配置music-server静态资源访问
-        // 将 /music-server/** 的请求映射到项目根目录下的 music-server 文件夹
         registry.addResourceHandler("/music-server/**")
-                .addResourceLocations("file:music-server/")
+                .addResourceLocations("file:./music-server/")
                 .setCacheControl(CacheControl.maxAge(365, TimeUnit.DAYS));
     }
 

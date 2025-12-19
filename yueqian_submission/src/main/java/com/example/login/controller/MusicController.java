@@ -4,6 +4,7 @@ import com.example.login.model.Singer;
 import com.example.login.model.Song;
 import com.example.login.model.SongList;
 import com.example.login.model.ListSong;
+import com.example.login.model.Comment;
 import com.example.login.service.MusicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -371,6 +372,174 @@ public class MusicController {
         boolean isFavorite = musicService.isFavorite(userId, songId);
         Map<String, Object> response = new HashMap<>();
         response.put("isFavorite", isFavorite);
+        return ResponseEntity.ok(response);
+    }
+
+    // ==================== 歌曲风格API ====================
+
+    /**
+     * 根据风格搜索歌曲
+     * GET /api/music/song/style?style=流行
+     */
+    @GetMapping("/song/style")
+    public ResponseEntity<?> searchSongsByStyle(@RequestParam String style) {
+        List<Song> songs = musicService.searchSongsByStyle(style);
+        for (Song song : songs) {
+            song.setAverageRating(musicService.getSongAverageRating(song.getId()));
+            song.setCommentCount(musicService.getSongCommentCount(song.getId()));
+            song.setTotalLikes(musicService.getSongTotalLikes(song.getId()));
+        }
+        return ResponseEntity.ok(songs);
+    }
+
+    /**
+     * 获取所有歌曲风格
+     * GET /api/music/song/styles
+     */
+    @GetMapping("/song/styles")
+    public ResponseEntity<?> getAllStyles() {
+        List<String> styles = musicService.getAllStyles();
+        return ResponseEntity.ok(styles);
+    }
+
+    /**
+     * 获取歌曲详情（含统计信息）
+     * GET /api/music/song/detail-with-stats?id=1
+     */
+    @GetMapping("/song/detail-with-stats")
+    public ResponseEntity<?> getSongDetailWithStats(@RequestParam Integer id) {
+        Optional<Song> song = musicService.getSongDetailWithStats(id);
+        if (song.isPresent()) {
+            return ResponseEntity.ok(song.get());
+        } else {
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "歌曲不存在");
+            response.put("success", false);
+            return ResponseEntity.status(404).body(response);
+        }
+    }
+
+    /**
+     * 获取所有歌曲（含统计信息）
+     * GET /api/music/song/all-with-stats
+     */
+    @GetMapping("/song/all-with-stats")
+    public ResponseEntity<?> getAllSongsWithStats() {
+        List<Song> songs = musicService.getAllSongsWithStats();
+        return ResponseEntity.ok(songs);
+    }
+
+    // ==================== 评论API ====================
+
+    /**
+     * 添加评论（含评分）
+     * POST /api/music/comment/add
+     * Body: { "userId": 1, "songId": 1, "content": "很好听", "rating": 5 }
+     */
+    @PostMapping("/comment/add")
+    public ResponseEntity<?> addComment(@RequestBody Comment comment) {
+        try {
+            Comment saved = musicService.addComment(comment);
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "评论成功");
+            response.put("success", true);
+            response.put("data", saved);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", e.getMessage());
+            response.put("success", false);
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    /**
+     * 获取歌曲的评论列表
+     * GET /api/music/comment/list?songId=1&userId=1
+     */
+    @GetMapping("/comment/list")
+    public ResponseEntity<?> getSongComments(
+            @RequestParam Integer songId,
+            @RequestParam(required = false) Integer userId) {
+        List<Comment> comments = musicService.getSongComments(songId, userId);
+        return ResponseEntity.ok(comments);
+    }
+
+    /**
+     * 删除评论
+     * DELETE /api/music/comment/delete?id=1
+     */
+    @DeleteMapping("/comment/delete")
+    public ResponseEntity<?> deleteComment(@RequestParam Integer id) {
+        musicService.deleteComment(id);
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "删除成功");
+        response.put("success", true);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 获取歌曲平均评分
+     * GET /api/music/song/rating?songId=1
+     */
+    @GetMapping("/song/rating")
+    public ResponseEntity<?> getSongRating(@RequestParam Integer songId) {
+        Double rating = musicService.getSongAverageRating(songId);
+        Map<String, Object> response = new HashMap<>();
+        response.put("rating", rating);
+        response.put("commentCount", musicService.getSongCommentCount(songId));
+        return ResponseEntity.ok(response);
+    }
+
+    // ==================== 点赞API ====================
+
+    /**
+     * 点赞歌曲（累计）
+     * POST /api/music/song/like
+     * Body: { "userId": 1, "songId": 1 }
+     */
+    @PostMapping("/song/like")
+    public ResponseEntity<?> likeSong(@RequestBody Map<String, Object> params) {
+        Integer userId = Integer.valueOf(params.get("userId").toString());
+        Integer songId = Integer.valueOf(params.get("songId").toString());
+        Integer likeCount = musicService.likeSong(userId, songId);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "点赞成功");
+        response.put("success", true);
+        response.put("likeCount", likeCount);
+        response.put("totalLikes", musicService.getSongTotalLikes(songId));
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 获取歌曲点赞数
+     * GET /api/music/song/likes?songId=1
+     */
+    @GetMapping("/song/likes")
+    public ResponseEntity<?> getSongLikes(@RequestParam Integer songId) {
+        Integer totalLikes = musicService.getSongTotalLikes(songId);
+        Map<String, Object> response = new HashMap<>();
+        response.put("totalLikes", totalLikes);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 点赞/取消点赞评论
+     * POST /api/music/comment/like
+     * Body: { "userId": 1, "commentId": 1 }
+     */
+    @PostMapping("/comment/like")
+    public ResponseEntity<?> toggleCommentLike(@RequestBody Map<String, Object> params) {
+        Integer userId = Integer.valueOf(params.get("userId").toString());
+        Integer commentId = Integer.valueOf(params.get("commentId").toString());
+        boolean isLiked = musicService.toggleCommentLike(userId, commentId);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", isLiked ? "点赞成功" : "已取消点赞");
+        response.put("success", true);
+        response.put("isLiked", isLiked);
+        response.put("likeCount", musicService.getCommentLikeCount(commentId));
         return ResponseEntity.ok(response);
     }
 }

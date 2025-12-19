@@ -35,6 +35,18 @@ public class Song {
     @Column(name = "create_time")
     private LocalDateTime createTime;
 
+    @Column(length = 50)
+    private String style;
+
+    @Transient
+    private Double averageRating = 0.0;
+
+    @Transient
+    private Long commentCount = 0L;
+
+    @Transient
+    private Integer totalLikes = 0;
+
     // Constructors
     public Song() {
         this.createTime = LocalDateTime.now();
@@ -119,5 +131,37 @@ public class Song {
 
     public void setCreateTime(LocalDateTime createTime) {
         this.createTime = createTime;
+    }
+
+    public String getStyle() {
+        return style;
+    }
+
+    public void setStyle(String style) {
+        this.style = style;
+    }
+
+    public Double getAverageRating() {
+        return averageRating;
+    }
+
+    public void setAverageRating(Double averageRating) {
+        this.averageRating = averageRating;
+    }
+
+    public Long getCommentCount() {
+        return commentCount;
+    }
+
+    public void setCommentCount(Long commentCount) {
+        this.commentCount = commentCount;
+    }
+
+    public Integer getTotalLikes() {
+        return totalLikes;
+    }
+
+    public void setTotalLikes(Integer totalLikes) {
+        this.totalLikes = totalLikes;
     }
 }
